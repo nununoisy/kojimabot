@@ -37,7 +37,7 @@ setInterval(()=>{
             }
         }
     });
-}, 15000);
+}, 15 * 60000);
 
 client.on('message', message=>{
     if (!message.guild) return;

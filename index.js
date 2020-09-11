@@ -4,12 +4,6 @@ const { Client: pgClient } = require('pg');
 
 const kojimaizer = require('./kojimaizer');
 
-const MIN = 60000;
-const SEC = 1000;
-
-//const DELAY = 10 * SEC;
-const DELAY = 30 * MIN;
-
 const pgclient = new pgClient({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -26,14 +20,21 @@ client.once('ready', () => {
     console.log('Login success');
 });
 
+let sentThisMinute = false;
+
 setInterval(()=>{
+    if (new Date().getMinutes % 1 > 0 && !sentThisMinute) {
+        sentThisMinute = false;
+        return;
+    }
+    sentThisMinute = true;
     console.log(`Sending messages to ${guilds.length} guilds`);
     guilds.forEach(guild => {
         if (guild.destChannel && guild.lastUsername) {
             guild.destChannel.send(kojimaizer(guild.lastUsername));
         }
     });
-}, DELAY);
+}, 1000);
 
 client.on('message', message=>{
     if (!message.guild) return;

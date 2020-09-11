@@ -23,7 +23,7 @@ client.once('ready', () => {
 let sentThisMinute = false;
 
 setInterval(()=>{
-    if (new Date().getMinutes % 15 > 0 && !sentThisMinute) {
+    if (new Date().getMinutes % 15 > 0 || !sentThisMinute) {
         sentThisMinute = false;
         return;
     }

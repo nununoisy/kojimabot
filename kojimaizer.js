@@ -19,7 +19,7 @@ module.exports = word => {
     let len = Math.ceil(syllables.length / 2);
     console.log(len)
 
-    if (len === 1) {
+    if (syllables.length === 1) {
         let value = syllables[0];
         let index = Math.ceil(value.length / 2);
         syllables = [value.substring(0, index), value.substring(index)];

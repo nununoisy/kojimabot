@@ -10,6 +10,13 @@ const SEC = 1000;
 //const DELAY = 10 * SEC;
 const DELAY = 30 * MIN;
 
+const pgclient = new pgClient({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
 pgclient.connect();
 
 let guilds = [];
@@ -55,13 +62,6 @@ client.on('message', message=>{
     if (message.member.id === message.guild.me.id) return;
     guilds[guildObjIdx].lastUsername = message.author.username;
     console.log(guilds[guildObjIdx].lastUsername);
-});
-
-const pgclient = new pgClient({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
 });
 
 console.log('Querying postgresql db');

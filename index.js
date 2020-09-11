@@ -31,7 +31,7 @@ setInterval(()=>{
                 client.guilds.fetch(guild.id).then(guildobj=>{
                     guilds[idx].destChannel = guildobj.channels.resolve(guild.destChannel);
                     guild.destChannel.send(kojimaizer(guild.lastUsername));
-                })
+                });
             } else {
                 guild.destChannel.send(kojimaizer(guild.lastUsername));
             }

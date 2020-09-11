@@ -29,9 +29,17 @@ setInterval(()=>{
     }
     sentThisMinute = true;
     console.log(`Sending messages to ${guilds.length} guilds`);
-    guilds.forEach(guild => {
+    guilds.forEach((guild, idx) => {
         if (guild.destChannel && guild.lastUsername) {
-            guild.destChannel.send(kojimaizer(guild.lastUsername));
+            if (typeof guild.destChannel === 'string') {
+                console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
+                client.guilds.fetch(guild.id).then(guildobj=>{
+                    guilds[idx].destChannel = guildobj.channels.resolve(guild.destChannel);
+                    guild.destChannel.send(kojimaizer(guild.lastUsername));
+                })
+            } else {
+                guild.destChannel.send(kojimaizer(guild.lastUsername));
+            }
         }
     });
 }, 1000);

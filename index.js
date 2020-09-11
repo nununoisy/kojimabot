@@ -70,7 +70,6 @@ client.on('message', message=>{
         return;
     }
     if (message.member.id === message.guild.me.id) return;
-    if ((typeof guilds[guildObjIdx].destChannel === 'string' && guilds[guildObjIdx].destChannel !== message.channel.id) || guilds[guildObjIdx].destChannel.id !== message.channel.id) return;
     guilds[guildObjIdx].lastUsername = message.author.username;
     console.log(guilds[guildObjIdx].lastUsername);
 });

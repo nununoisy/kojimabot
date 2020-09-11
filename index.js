@@ -23,10 +23,11 @@ client.once('ready', () => {
 let sentThisMinute = false;
 
 setInterval(()=>{
-    if (new Date().getMinutes % 15 > 0 || !sentThisMinute) {
+    if (new Date().getMinutes % 15 > 0) {
         sentThisMinute = false;
         return;
     }
+    if (sentThisMinute) return;
     sentThisMinute = true;
     console.log(`Sending messages to ${guilds.length} guilds`);
     guilds.forEach((guild, idx) => {

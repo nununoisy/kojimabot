@@ -38,9 +38,11 @@ setInterval(()=>{
 }, 15 * 60000);
 
 client.on('guildMemberAdd', member => {
-    let guild = member.guild;
-    let guildObjIdx = guilds.findIndex(guild=>guild.id===message.guild.id);
+    let djsguild = member.guild;
+    let guildObjIdx = guilds.findIndex(fguild=>fguild.id===djsguild.id);
     if (guildObjIdx === -1 || !guilds[guildObjIdx].entermessage) return;
+
+    let guild = guilds[guildObjIdx];
 
     if (guild.destChannel) {
         if (typeof guild.destChannel === 'string') {
@@ -56,9 +58,11 @@ client.on('guildMemberAdd', member => {
 });
 
 client.on('guildMemberRemove', member => {
-    let guild = member.guild;
-    let guildObjIdx = guilds.findIndex(guild=>guild.id===message.guild.id);
+    let djsguild = member.guild;
+    let guildObjIdx = guilds.findIndex(fguild=>fguild.id===djsguild.id);
     if (guildObjIdx === -1 || !guilds[guildObjIdx].leavemessage) return;
+
+    let guild = guilds[guildObjIdx];
 
     if (guild.destChannel) {
         if (typeof guild.destChannel === 'string') {

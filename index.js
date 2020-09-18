@@ -49,10 +49,10 @@ client.on('guildMemberAdd', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username));
+                guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`);
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username));
+            guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`);
         }
     }
 });
@@ -69,10 +69,10 @@ client.on('guildMemberRemove', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye'));
+                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`);
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye'));
+            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`);
         }
     }
 });

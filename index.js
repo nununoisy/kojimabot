@@ -48,7 +48,7 @@ client.on('guildMemberAdd', member => {
         if (typeof guild.destChannel === 'string') {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
-                guilds[idx].destChannel = guildobj.channels.resolve(guild.destChannel);
+                guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
                 guild.destChannel.send(kojimaizer(member.user.username));
             });
         } else {
@@ -68,7 +68,7 @@ client.on('guildMemberRemove', member => {
         if (typeof guild.destChannel === 'string') {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
-                guilds[idx].destChannel = guildobj.channels.resolve(guild.destChannel);
+                guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
                 guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye'));
             });
         } else {

@@ -105,7 +105,7 @@ client.on('message', message => {
             message.react('📤');
             message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n');
         } else if (message.content.indexOf('setchannel') > -1) {
-            let channel = message.mentions.channels ? message.mentions.channels.first() : message.channel;
+            let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
             if (perms.has('SEND_MESSAGES')) {
                 console.log(`Set channel for ${guilds[guildObjIdx].id} to ${channel.id}`);

@@ -37,6 +37,7 @@ setInterval(()=>{
             } else {
                 guild.destChannel.send(kojimaizer(guild.lastUsername));
             }
+            guilds[idx].greetedLast = new Date();
             pgclient.query(`UPDATE guilds SET greetedlast='${postgresdate(new Date())}' WHERE gid='${guild.id}';`);
         }
     });

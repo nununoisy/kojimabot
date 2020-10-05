@@ -4,6 +4,8 @@ const { Client: pgClient } = require('pg');
 
 const kojimaizer = require('./kojimaizer');
 
+const postgresdate = d => `${d.getUTCFullYear()}-${('00'+(d.getUTCMonth()+1)).slice(-2)}-${('00'+d.getUTCDate()).slice(-2)} ${('00'+d.getUTCHours()).slice(-2)}:${('00'+d.getUTCMinutes()).slice(-2)}:${('00'+d.getUTCSeconds()).slice(-2)}`;
+
 const pgclient = new pgClient({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -21,9 +23,11 @@ client.once('ready', () => {
 });
 
 setInterval(()=>{
-    console.log(`Sending messages to ${guilds.length} guilds`);
+    let count = 0;
+    console.log(`Evaluating whether to send messages to ${guilds.length} guilds`);
     guilds.forEach((guild, idx) => {
-        if (guild.destChannel && guild.lastUsername) {
+        if (guild.destChannel && guild.lastUsername && guild.greetInt && guild.greetedLast && Math.floor(Math.abs(new Date() - guild.greetedLast)/60000) >= guild.greetInt) {
+            count++;
             if (typeof guild.destChannel === 'string') {
                 console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
                 client.guilds.fetch(guild.id).then(guildobj=>{
@@ -33,9 +37,11 @@ setInterval(()=>{
             } else {
                 guild.destChannel.send(kojimaizer(guild.lastUsername));
             }
+            pgclient.query(`UPDATE guilds SET greetedlast='${postgresdate(new Date())}' WHERE gid='${guilds[guildObjIdx].id}';`);
         }
     });
-}, 15 * 60000);
+    console.log(`Sent messages to ${count} guilds`);
+}, 60000);
 
 client.on('guildMemberAdd', member => {
     let djsguild = member.guild;
@@ -87,23 +93,26 @@ client.on('message', message => {
             destChannel: null,
             lastUsername: null,
             entermessage: false,
-            leavemessage: false
+            leavemessage: false,
+            greetInt: 15,
+            greetedLast: new Date()
         });
         pgclient.query(`INSERT INTO guilds (gid, cid) VALUES ('${message.guild.id}','0');`);
     }
     if (message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
         if (message.content.indexOf('help') > -1) {
             message.react('📤');
-            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n');
+            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n');
         } else if (message.content.indexOf('setchannel') > -1) {
-            let perms = new Discord.Permissions(message.channel.permissionsFor(message.guild.me).bitfield);
+            let channel = message.mentions.channels ? message.mentions.channels.first() : message.channel;
+            let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
             if (perms.has('SEND_MESSAGES')) {
-                console.log(`Set channel for ${guilds[guildObjIdx].id} to ${message.channel.id}`);
-                guilds[guildObjIdx].destChannel = message.channel;
-                message.channel.send('Hi Ad Min\n\nI Set The Current Channel To This One');
-                pgclient.query(`UPDATE guilds SET cid='${message.channel.id}' WHERE gid='${guilds[guildObjIdx].id}';`);
+                console.log(`Set channel for ${guilds[guildObjIdx].id} to ${channel.id}`);
+                guilds[guildObjIdx].destChannel = channel;
+                message.channel.send(`Hi Ad Min\n\nI Set The Channel To ${message.mentions.channels ? '<#'+channel.id+'>' : 'This One'}`);
+                pgclient.query(`UPDATE guilds SET cid='${channel.id}' WHERE gid='${guilds[guildObjIdx].id}';`);
             } else {
-                message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${message.channel.name} So I Did Not Change The Channel`);
+                message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${channel.name} So I Did Not Change The Channel`);
             }
         } else if (message.content.indexOf('togglewelcome') > -1) {
             guilds[guildObjIdx].entermessage = !guilds[guildObjIdx].entermessage;
@@ -115,6 +124,13 @@ client.on('message', message => {
             console.log(`${guilds[guildObjIdx].leavemessage ? 'Enabled' : 'Disabled'} farewell for ${guilds[guildObjIdx].id}`);
             message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`);
             pgclient.query(`UPDATE guilds SET leavemsg='${guilds[guildObjIdx].leavemessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
+        } else if (message.content.indexOf('setinterval') > -1) {
+            let interv = parseInt(message.content.split(' ').pop(),10);
+            if (isNaN(interv)) return;
+            guilds[guildObjIdx].greetInt = interv;
+            console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
+            message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${interv} Minutes`);
+            pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`)
         }
         return;
     }
@@ -137,7 +153,9 @@ pgclient.query('SELECT * FROM guilds;', (err, res)=>{
             destChannel: row.cid,
             lastUsername: null,
             entermessage: row.entermsg,
-            leavemessage: row.leavemsg
+            leavemessage: row.leavemsg,
+            greetInt: row.greetinterval,
+            greetedLast: row.greetedlast
         });
     }
     console.log('Logging into discord');

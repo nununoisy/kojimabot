@@ -62,10 +62,10 @@ client.on('guildMemberAdd', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`);
+                guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`);
+            guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
         }
     }
 });
@@ -82,10 +82,10 @@ client.on('guildMemberRemove', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`);
+                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`).catch(e=>console.log(`Error sending message: ${e}`));
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`);
+            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`).catch(e=>console.log(`Error sending message: ${e}`));
         }
     }
 });
@@ -109,34 +109,34 @@ client.on('message', message => {
     if (message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
         if (message.content.indexOf('help') > -1) {
             message.react('📤');
-            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n');
+            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n').catch(e=>console.log(`Error sending message: ${e}`));
         } else if (message.content.indexOf('setchannel') > -1) {
             let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
             if (perms.has('SEND_MESSAGES')) {
                 console.log(`Set channel for ${guilds[guildObjIdx].id} to ${channel.id}`);
                 guilds[guildObjIdx].destChannel = channel;
-                message.channel.send(`Hi Ad Min\n\nI Set The Channel To ${message.mentions.channels ? '<#'+channel.id+'>' : 'This One'}`);
+                message.channel.send(`Hi Ad Min\n\nI Set The Channel To ${message.mentions.channels ? '<#'+channel.id+'>' : 'This One'}`).catch(e=>console.log(`Error sending message: ${e}`));
                 pgclient.query(`UPDATE guilds SET cid='${channel.id}' WHERE gid='${guilds[guildObjIdx].id}';`);
             } else {
-                message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${channel.name} So I Did Not Change The Channel`);
+                message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${channel.name} So I Did Not Change The Channel`).catch(e=>console.log(`Error sending message: ${e}`));
             }
         } else if (message.content.indexOf('togglewelcome') > -1) {
             guilds[guildObjIdx].entermessage = !guilds[guildObjIdx].entermessage;
             console.log(`${guilds[guildObjIdx].entermessage ? 'Enabled' : 'Disabled'} welcome for ${guilds[guildObjIdx].id}`);
-            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].entermessage ? 'Now' : 'Not'} Greet People When They Join`);
+            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].entermessage ? 'Now' : 'Not'} Greet People When They Join`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET entermsg='${guilds[guildObjIdx].entermessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
         } else if (message.content.indexOf('togglefarewell') > -1) {
             guilds[guildObjIdx].leavemessage = !guilds[guildObjIdx].leavemessage;
             console.log(`${guilds[guildObjIdx].leavemessage ? 'Enabled' : 'Disabled'} farewell for ${guilds[guildObjIdx].id}`);
-            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`);
+            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET leavemsg='${guilds[guildObjIdx].leavemessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
         } else if (message.content.indexOf('setinterval') > -1) {
             let interv = parseInt(message.content.split(' ').pop(),10);
             if (isNaN(interv)) return;
             guilds[guildObjIdx].greetInt = interv;
             console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
-            message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${interv} Minutes`);
+            message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${interv} Minutes`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`)
         }
         return;

@@ -26,7 +26,7 @@ input.addEventListener('input', e=>{
 savebtn.addEventListener('click', ()=>{
     const svgElements = document.body.querySelectorAll('svg');
     svgElements.forEach(function(item) {
-        item.setAttribute("width", item.getBoundingClientRect().width);
+        item.setAttribute("width", item.getBoundingClientRect().height);
         item.setAttribute("height", item.getBoundingClientRect().height);
     });
     html2canvas(document.querySelector("#capture"), {

@@ -31,9 +31,15 @@ setInterval(()=>{
             if (typeof guild.destChannel === 'string') {
                 console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
                 client.guilds.fetch(guild.id).then(guildobj=>{
+                    let bak = guild.destChannel;
                     guilds[idx].destChannel = guildobj.channels.resolve(guild.destChannel);
+                    if (!guild.destChannel) {
+                        guild.destChannel = bak;
+                        console.log(`Couldn't resolve channel ${guild.destChannel} in ${guild.id}.`);
+                        return;
+                    }
                     guild.destChannel.send(kojimaizer(guild.lastUsername));
-                });
+                }).catch(()=>console.log(`Couldn't fetch guild ${guild.id}, maybe the bot was kicked?`));
             } else {
                 guild.destChannel.send(kojimaizer(guild.lastUsername));
             }

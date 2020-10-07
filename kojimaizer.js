@@ -4,6 +4,7 @@ nlp.extend(require('compromise-syllables'));
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
 
 module.exports = word => {
+    word = word.replace(/([^_])_([^_])/g,'$1 $2').replace(/([a-z])([A-Z])/g,'$1 $2');
     let syllables = nlp(word).terms().syllables().reduce((acc,cv)=>{
         return [
             ...acc,

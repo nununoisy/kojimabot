@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/nununoisy/kojimabot#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "compromise": "^13.5.0",
     "compromise-syllables": "0.0.4",
     "discord.js": "^12.3.1",
+    "express": "^4.17.1",
     "pg": "^8.3.3"
   }
 }

@@ -8,9 +8,20 @@ const savebtn = document.querySelector('#save');
 
 datefield.innerHTML = `${(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"])[now.getMonth()]} ${now.getDate()}`;
 
-input.value = "SpongeBob";
+if (window.location.hash) {
+    input.value = decodeURI(window.location.hash.replace(/^#/,''));
+    fetch(`/kojimaize`, {
+        method: 'POST',
+        body: input.value
+    }).then(r=>r.text()).then(response=>{
+        output.innerHTML = response;
+    });
+} else {
+    input.value = "SpongeBob";
+}
 
 input.addEventListener('input', e=>{
+    window.location.hash = encodeURI(e.target.value);
     if (e.target.value === '') {
         output.innerHTML = "Hi Sponge Bob";
         return;
@@ -20,7 +31,7 @@ input.addEventListener('input', e=>{
         body: e.target.value
     }).then(r=>r.text()).then(response=>{
         output.innerHTML = response;
-    })
+    });
 });
 
 savebtn.addEventListener('click', ()=>{

@@ -20,7 +20,7 @@ let guilds = [];
 client.once('ready', () => {
     client.user.setActivity("Hi Sponge Bob"); 
     console.log('Login success');
-    console.log(client.guilds.cache.map(g=>g.id));
+    console.log(client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount })));
 });
 
 setInterval(()=>{

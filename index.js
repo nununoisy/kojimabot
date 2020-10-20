@@ -3,6 +3,7 @@ const client = new Discord.Client({disableMentions: 'everyone'});
 const { Client: pgClient } = require('pg');
 
 const kojimaizer = require('./kojimaizer');
+const { intervalToMin, minToInterval } = require('./intervalHelper');
 
 const postgresdate = d => `${d.getUTCFullYear()}-${('00'+(d.getUTCMonth()+1)).slice(-2)}-${('00'+d.getUTCDate()).slice(-2)} ${('00'+d.getUTCHours()).slice(-2)}:${('00'+d.getUTCMinutes()).slice(-2)}:${('00'+d.getUTCSeconds()).slice(-2)}`;
 
@@ -83,10 +84,10 @@ client.on('guildMemberRemove', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`).catch(e=>console.log(`Error sending message: ${e}`));
+                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` #${member.user.discriminator}`).catch(e=>console.log(`Error sending message: ${e}`));
+            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
         }
     }
 });
@@ -133,11 +134,11 @@ client.on('message', message => {
             message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET leavemsg='${guilds[guildObjIdx].leavemessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
         } else if (message.content.indexOf('setinterval') > -1) {
-            let interv = parseInt(message.content.split(' ').pop(),10);
+            let interv = intervalToMin(message.content.split(' ').pop());
             if (isNaN(interv)) return;
             guilds[guildObjIdx].greetInt = interv;
             console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
-            message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${interv} Minutes`).catch(e=>console.log(`Error sending message: ${e}`));
+            message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${minToInterval(interv)}`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`)
         }
         return;

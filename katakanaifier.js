@@ -40,6 +40,9 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
             trbuffer = Buffer.from(data);
         }
     });
+    transcriber.stderr.on('data', data=>{
+        console.log(`espeak-ng stderr:`, data.toString('utf-8'));
+    });
     transcriber.stdout.on('close', () => {
         if (!trbuffer) {
             resolve(`【${oterm}】`);

@@ -78,9 +78,10 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
 
         let postprocessed = phonemes.join('').replace(/s([^aeiou])/g,'se$1')
                                              .replace(/t([^aeiou])/g,'ta$1')
-                                             .replace(/d([^aeiou])/g,'da$1')
+                                             .replace(/d([^aeou])/g,'da$1')
                                              .replace(/p([^aeiou])/g,'pu$1')
                                              .replace(/k([^aeiou])/g,'ku$1')
+                                             .replace(/g([^aeiou])/g,'gu$1')
                                              .replace(/z([^aeiou])/g,'ze$1')
                                              .replace(/hu+/g,'ha')
                                              .replace(/si+/g,'shi')

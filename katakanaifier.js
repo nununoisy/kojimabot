@@ -32,7 +32,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
     let transcription = '';
 
     console.log(`Executing: espeak-ng -x --ipa -q --sep=@ '${term}'`);
-    const transcriber = spawn('espeak-ng', ['-x','--ipa','-q','--sep=@', term]);
+    const transcriber = spawn('espeak-ng', ['--path="/app/.apt/usr/lib/x86_64-linux-gnu/espeak-ng-data/"', '-x','--ipa','-q','--sep=@', term]);
     transcriber.stdout.on('data', (data) => {
         if (trbuffer) {
             trbuffer = Buffer.concat([trbuffer, data], trbuffer.length+data.length)

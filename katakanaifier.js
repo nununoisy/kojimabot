@@ -10,7 +10,7 @@ const converter = { convert: term=>{
     } else return false
 }};
 
-const katakanaifier = term => {
+const katakanaifier = term => new Promise((resolve,reject)=>{
     console.log('Input:',term);
 
     term = term.replace(/[0-9]+/g, num=>num.split('').join(' '));
@@ -18,7 +18,7 @@ const katakanaifier = term => {
     let conversion = converter.convert(term);
     if (conversion) {
         console.log(conversion);
-        return conversion.katakana;
+        resolve(conversion.katakana);
     } else {
         console.log('Not romaji, appling algorithm...')
     }
@@ -81,8 +81,8 @@ const katakanaifier = term => {
 
         conversion = converter.convert(postprocessed);
         console.log(conversion);
-        return conversion.katakana;
+        resolve(conversion.katakana);
     });
-};
+});
 
 module.exports = katakanaifier;

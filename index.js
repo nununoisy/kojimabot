@@ -25,7 +25,8 @@ client.once('ready', () => {
     console.log(client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount })));
 });
 
-const sendMessageInGuild = (guild, message, messagejp) => {
+const sendMessageInGuild = async (guild, message, messagejpp) => {
+    const messagejp = await messagejpp;
     console.log('Message(en):',message);
     console.log('Message(jp):',messagejp);
     if (guild.jpenabled && guild.destChannel.guild.me.hasPermission('MANAGE_WEBHOOKS')) {

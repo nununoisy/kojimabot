@@ -3,6 +3,7 @@ const client = new Discord.Client({disableMentions: 'everyone'});
 const { Client: pgClient } = require('pg');
 
 const kojimaizer = require('./kojimaizer');
+const katakanaifier = require('./katakanaifier');
 const { intervalToMin, minToInterval } = require('./intervalHelper');
 
 const postgresdate = d => `${d.getUTCFullYear()}-${('00'+(d.getUTCMonth()+1)).slice(-2)}-${('00'+d.getUTCDate()).slice(-2)} ${('00'+d.getUTCHours()).slice(-2)}:${('00'+d.getUTCMinutes()).slice(-2)}:${('00'+d.getUTCSeconds()).slice(-2)}`;
@@ -24,6 +25,22 @@ client.once('ready', () => {
     console.log(client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount })));
 });
 
+const sendMessageInGuild = (guild, message, messagejp) => {
+    if (guild.jpenabled && guild.destChannel.guild.me.hasPermission('MANAGE_WEBHOOKS')) {
+        guild.destChannel.fetchWebhooks().then(webhooks=>{
+            if (webhooks.size < 1) return guild.destChannel.createWebhook('小島秀夫', {avatarURL: 'https://kojimaize.xyz/img/kojimajp.jpg'});
+            return webhooks.first();
+        }).then(webhook=>{
+            webhook.send(messagejp, {
+                username: '小島秀夫',
+                avatarURL: 'https://kojimaize.xyz/img/kojimajp.jpg',
+            });
+        }).catch(e=>console.log(`Error sending message: ${e}`));
+    } else {
+        guild.destChannel.send(message).catch(e=>console.log(`Error sending message: ${e}`));
+    }
+}
+
 setInterval(()=>{
     let count = 0;
     console.log(`Evaluating whether to send messages to ${guilds.length} guilds`);
@@ -40,10 +57,11 @@ setInterval(()=>{
                         console.log(`Couldn't resolve channel ${guild.destChannel} in ${guild.id}.`);
                         return;
                     }
-                    guild.destChannel.send(kojimaizer(guild.lastUsername));
+                    //guild.destChannel.send(kojimaizer(guild.lastUsername));
+                    sendMessageInGuild(guild, kojimaizer(guild.lastUsername), `こんにちは ${katakanaifier(guild.lastUsername)}`);
                 }).catch(()=>console.log(`Couldn't fetch guild ${guild.id}, maybe the bot was kicked?`));
             } else {
-                guild.destChannel.send(kojimaizer(guild.lastUsername));
+                sendMessageInGuild(guild, kojimaizer(guild.lastUsername), `こんにちは ${katakanaifier(guild.lastUsername)}`);
             }
             guilds[idx].greetedLast = new Date();
             pgclient.query(`UPDATE guilds SET greetedlast='${postgresdate(new Date())}' WHERE gid='${guild.id}';`);
@@ -64,10 +82,12 @@ client.on('guildMemberAdd', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
+                //guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
+                sendMessageInGuild(guild, kojimaizer(member.user.username) + ` <@!${member.id}>`, `こんにちは ${katakanaifier(guild.lastUsername)} <@!${member.id}>`);
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
+            //guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
+            sendMessageInGuild(guild, kojimaizer(member.user.username) + ` <@!${member.id}>`, `こんにちは ${katakanaifier(guild.lastUsername)} <@!${member.id}>`);
         }
     }
 });
@@ -84,10 +104,12 @@ client.on('guildMemberRemove', member => {
             console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
-                guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
+                //guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
+                sendMessageInGuild(guild, kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`, `さようなら ${katakanaifier(guild.lastUsername)} (${member.user.username}#${member.user.discriminator})`);
             });
         } else {
-            guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
+            //guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
+            sendMessageInGuild(guild, kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`, `さようなら ${katakanaifier(guild.lastUsername)} (${member.user.username}#${member.user.discriminator})`);
         }
     }
 });
@@ -104,7 +126,8 @@ client.on('message', message => {
             entermessage: false,
             leavemessage: false,
             greetInt: 15,
-            greetedLast: new Date()
+            greetedLast: new Date(),
+            jpenabled: false
         });
         pgclient.query(`INSERT INTO guilds (gid, cid) VALUES ('${message.guild.id}','0');`);
     }
@@ -133,6 +156,11 @@ client.on('message', message => {
             console.log(`${guilds[guildObjIdx].leavemessage ? 'Enabled' : 'Disabled'} farewell for ${guilds[guildObjIdx].id}`);
             message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET leavemsg='${guilds[guildObjIdx].leavemessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
+        } else if (message.content.indexOf('togglejp') > -1) {
+            guilds[guildObjIdx].jpenabled = !guilds[guildObjIdx].jpenabled;
+            console.log(`${guilds[guildObjIdx].jpenabled ? 'Enabled' : 'Disabled'} japanese mode for ${guilds[guildObjIdx].id}`);
+            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese`).catch(e=>console.log(`Error sending message: ${e}`));
+            pgclient.query(`UPDATE guilds SET jpenabled='${guilds[guildObjIdx].jpenabled}' WHERE gid='${guilds[guildObjIdx].id}';`);
         } else if (message.content.indexOf('setinterval') > -1) {
             let interv = intervalToMin(message.content.split(' ').pop());
             if (isNaN(interv)) return;
@@ -164,7 +192,8 @@ pgclient.query('SELECT * FROM guilds;', (err, res)=>{
             entermessage: row.entermsg,
             leavemessage: row.leavemsg,
             greetInt: row.greetinterval,
-            greetedLast: row.greetedlast
+            greetedLast: row.greetedlast,
+            jpenabled: row.jpenabled
         });
     }
     console.log('Logging into discord');

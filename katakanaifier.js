@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 const wanakana = require('wanakana');
 const converter = { convert: term=>{
-    if (wanakana.isKana(wanakana.toKana(term.replace(/\s/g,'')))) {
+    if (wanakana.isKana(wanakana.toKana(term.replace(/[\s_]/g,'')))) {
         return {
             hiragana: wanakana.toHiragana(term),
             katakana: wanakana.toKatakana(term),
@@ -15,7 +15,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
 
     let oterm = term;
 
-    term = term.replace(/[0-9]+/g, num=>num.split('').join(' '));
+    term = term.replace(/[0-9]+/g, num=>num.split('').join(' ')).replace(/_/g,'');
 
     let conversion = converter.convert(term);
     if (conversion) {

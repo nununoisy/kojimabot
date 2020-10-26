@@ -1,7 +1,7 @@
 # kojimabot
 Hi Sponge Bob
 
-[Invite me to your server!](https://discord.com/oauth2/authorize?client_id=753757823535677561&scope=bot)
+[Invite me to your server!](https://discord.com/oauth2/authorize?client_id=753757823535677561&scope=bot&permissions=536870912)
 
 ## Setup
 You will need to set up a PostgreSQL server, and execute the following query on it:

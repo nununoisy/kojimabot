@@ -173,7 +173,7 @@ client.on('message', message => {
         } else if (message.content.indexOf('togglejp') > -1) {
             guilds[guildObjIdx].jpenabled = !guilds[guildObjIdx].jpenabled;
             console.log(`${guilds[guildObjIdx].jpenabled ? 'Enabled' : 'Disabled'} japanese mode for ${guilds[guildObjIdx].id}`);
-            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese\nMake Sure To Give Me Manage Webhooks Permissions`).catch(e=>console.log(`Error sending message: ${e}`));
+            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese${guilds[guildObjIdx].jpenabled ? '\nMake Sure To Give Me Manage Webhooks Permissions' : ''}`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET jpenabled='${guilds[guildObjIdx].jpenabled}' WHERE gid='${guilds[guildObjIdx].id}';`);
         } else if (message.content.indexOf('setinterval') > -1) {
             let interv = intervalToMin(message.content.split(' ').pop());

@@ -179,12 +179,17 @@ client.on('message', message => {
     console.log(guilds[guildObjIdx].lastUsername);
 });
 
+console.log('espeak-ng debug');
+const { spawnSync } = require('child_process');
+let espeaktestbuf = spawnSync('espeak-ng', ['-x','--ipa','-q','--sep=@', 'test']);
+console.log(espeaktestbuf);
+
 console.log('Querying postgresql db');
 pgclient.query('SELECT * FROM guilds;', (err, res)=>{
     if (err) throw err;
     console.log('Responded with row count', res.rows.length);
     for (let row of res.rows) {
-        console.log(row);
+        //console.log(row);
         guilds.push({
             id: row.gid,
             destChannel: row.cid,

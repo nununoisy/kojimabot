@@ -26,6 +26,8 @@ client.once('ready', () => {
 });
 
 const sendMessageInGuild = (guild, message, messagejp) => {
+    console.log('Message(en):',message);
+    console.log('Message(jp):',messagejp);
     if (guild.jpenabled && guild.destChannel.guild.me.hasPermission('MANAGE_WEBHOOKS')) {
         guild.destChannel.fetchWebhooks().then(webhooks=>{
             if (webhooks.size < 1) return guild.destChannel.createWebhook('小島秀夫', {avatarURL: 'https://kojimaize.xyz/img/kojimajp.jpg'});
@@ -83,11 +85,11 @@ client.on('guildMemberAdd', member => {
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
                 //guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
-                sendMessageInGuild(guild, kojimaizer(member.user.username) + ` <@!${member.id}>`, `こんにちは ${katakanaifier(guild.lastUsername)} <@!${member.id}>`);
+                sendMessageInGuild(guild, kojimaizer(member.user.username) + ` <@!${member.id}>`, `こんにちは ${katakanaifier(member.user.username)} <@!${member.id}>`);
             });
         } else {
             //guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
-            sendMessageInGuild(guild, kojimaizer(member.user.username) + ` <@!${member.id}>`, `こんにちは ${katakanaifier(guild.lastUsername)} <@!${member.id}>`);
+            sendMessageInGuild(guild, kojimaizer(member.user.username) + ` <@!${member.id}>`, `こんにちは ${katakanaifier(member.user.username)} <@!${member.id}>`);
         }
     }
 });
@@ -105,11 +107,11 @@ client.on('guildMemberRemove', member => {
             client.guilds.fetch(guild.id).then(guildobj=>{
                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
                 //guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
-                sendMessageInGuild(guild, kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`, `さようなら ${katakanaifier(guild.lastUsername)} (${member.user.username}#${member.user.discriminator})`);
+                sendMessageInGuild(guild, kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`, `さようなら ${katakanaifier(member.user.username)} (${member.user.username}#${member.user.discriminator})`);
             });
         } else {
             //guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
-            sendMessageInGuild(guild, kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`, `さようなら ${katakanaifier(guild.lastUsername)} (${member.user.username}#${member.user.discriminator})`);
+            sendMessageInGuild(guild, kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`, `さようなら ${katakanaifier(member.user.username)} (${member.user.username}#${member.user.discriminator})`);
         }
     }
 });

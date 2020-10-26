@@ -148,7 +148,7 @@ client.on('message', message => {
     if (message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
         if (message.content.indexOf('help') > -1) {
             message.react('📤');
-            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n').catch(e=>console.log(`Error sending message: ${e}`));
+            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n `@HIDEO_KOJIMA togglejp` - Toggle Japanese Mode. Japanese Mode Requires Manage Webhooks Permissions').catch(e=>console.log(`Error sending message: ${e}`));
         } else if (message.content.indexOf('setchannel') > -1) {
             let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
@@ -173,7 +173,7 @@ client.on('message', message => {
         } else if (message.content.indexOf('togglejp') > -1) {
             guilds[guildObjIdx].jpenabled = !guilds[guildObjIdx].jpenabled;
             console.log(`${guilds[guildObjIdx].jpenabled ? 'Enabled' : 'Disabled'} japanese mode for ${guilds[guildObjIdx].id}`);
-            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese`).catch(e=>console.log(`Error sending message: ${e}`));
+            message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese\nMake Sure To Give Me Manage Webhooks Permissions`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET jpenabled='${guilds[guildObjIdx].jpenabled}' WHERE gid='${guilds[guildObjIdx].id}';`);
         } else if (message.content.indexOf('setinterval') > -1) {
             let interv = intervalToMin(message.content.split(' ').pop());

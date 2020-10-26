@@ -26,7 +26,7 @@ client.once('ready', () => {
 });
 
 const sendMessageInGuild = async (guild, message, messagejpp) => {
-    const messagejp = await messagejpp;
+    const messagejp = await messagejpp();
     console.log('Message(en):',message);
     console.log('Message(jp):',messagejp);
     if (guild.jpenabled && guild.destChannel.guild.me.hasPermission('MANAGE_WEBHOOKS')) {

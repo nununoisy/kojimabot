@@ -10,7 +10,7 @@ const converter = { convert: term=>{
     } else return false
 }};
 
-const katakanaifier = term => new Promise((resolve,reject)=>{
+const katakanaifier = term => ()=>new Promise((resolve,reject)=>{
     console.log('Input:',term);
 
     term = term.replace(/[0-9]+/g, num=>num.split('').join(' '));

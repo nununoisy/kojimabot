@@ -13,12 +13,15 @@ const converter = { convert: term=>{
 const katakanaifier = term => new Promise((resolve,reject)=>{
     console.log('Input:',term);
 
+    let oterm = term;
+
     term = term.replace(/[0-9]+/g, num=>num.split('').join(' '));
 
     let conversion = converter.convert(term);
     if (conversion) {
         console.log(conversion);
         resolve(conversion.katakana);
+        return;
     } else {
         console.log('Not romaji, appling algorithm...')
     }
@@ -37,6 +40,10 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
         }
     });
     transcriber.stdout.on('close', () => {
+        if (!trbuffer) {
+            resolve(`【${oterm}】`);
+            return;
+        }
         transcription = trbuffer.toString('utf-8').trim();
         console.log('espeak-ng IPA:',transcription.replace(/@/gu,''));
         let phonemes = transcription.replace(/[ˈˌ]/gu,'').replace(/\s/g,'@').replace(/ŋ@ɡ/gu,'ŋ').split('@').map(

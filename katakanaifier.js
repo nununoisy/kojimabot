@@ -31,6 +31,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
     let trbuffer = null;
     let transcription = '';
 
+    console.log(`Executing: espeak-ng -x --ipa -q --sep=@ '${term}'`);
     const transcriber = spawn('espeak-ng', ['-x','--ipa','-q','--sep=@', term]);
     transcriber.stdout.on('data', (data) => {
         if (trbuffer) {

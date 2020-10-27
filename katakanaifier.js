@@ -15,7 +15,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
 
     let oterm = term;
 
-    term = term.replace(/[0-9]+/g, num=>num.split('').join(' ')).replace(/_/g,'');
+    term = term.replace(/[0-9]+/g, num=>num.split('').join(' ')).replace(/n[kc]/g,'n').replace(/_/g,'');
 
     let conversion = converter.convert(term);
     if (conversion) {
@@ -50,44 +50,55 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
         }
         transcription = trbuffer.toString('utf-8').trim();
         console.log('espeak-ng IPA:',transcription.replace(/@/gu,''));
-        let phonemes = transcription.replace(/[ˈˌ]/gu,'').replace(/\s/g,'@').replace(/ŋ@ɡ/gu,'ŋ').split('@').map(
-            ph=>ph.replace(/ɔɪ/gu,'oii')            // diphthongs
-                  .replace(/əʊ|oʊ/gu,'o')
-                  .replace(/aʊ/gu,'au')
+        let phonemes = transcription.replace(/[ˈˌ]/gu,'').replace(/\s/gu,'*@').replace(/ŋ@ɡ/gu,'ŋ').replace(/k@æ/gu,'kya').replace(/j@?uː/gu,'yuu').split('@').map(
+            ph=>ph.replace(/eɪ/gu,'ei')             // diphthongs
                   .replace(/aɪ/gu,'aii')
-                  .replace(/eɪ/gu,'ei')
-                  .replace(/ɑ|ɒ|ɐ|ɔ|ə/gu,'a')       // vowels
-                  .replace(/æ/gu,'aa')
+                  .replace(/ɔɪ/gu,'oii')
+                  .replace(/oʊ/gu,'oo')
+                  .replace(/əʊ/gu,'ou')
+                  .replace(/aʊ/gu,'au')
+                  .replace(/ɪə/gu,'ia')
+                  .replace(/ɛə/gu,'ea')
+                  .replace(/ʊə/gu,'uaa')
+                  .replace(/ə\*/gu,'aa*')
+                  .replace(/ɑ|ɐ|ə/gu,'a')           // vowels
+                  .replace(/æ/gu,'a')
                   .replace(/ɛ/gu,'e')
                   .replace(/ɪ|i/,'i')
+                  .replace(/ɔː/gu,'ou')
+                  .replace(/ɔ|ɒ/gu,'o')
                   .replace(/ʌ|ʊ|u/gu,'u')
                   .replace(/([aeiou])ː/gu,'$1$1')   // long vowels
                   .replace(/tʃ|dʒ/gu,'ch')          // consonants
-                  .replace(/θ|ð/gu,'t')
+                  .replace(/θ/gu,'s')
+                  .replace(/ð/gu,'z')
                   .replace(/ʃ/gu,'shi')
-                  .replace(/ʒ/gu, 'sha')
+                  .replace(/ʒ/gu,'sha')
                   .replace(/ŋ/gu,'ngu')
                   .replace(/ɡ/gu,'g')
                   .replace(/l|ɬ|ɹ/gu,'r')
                   .replace(/hw/g,'w')
                   .replace(/x/gu, 'ga')
-                  .replace(/ʔ/gu, '')
-
+                  .replace(/ʔ/gu, '')               // transcription rules adapted from rules by Ben Bullock
         );
         console.log('espeak-ng phonemes:', phonemes);
 
-        let postprocessed = phonemes.join('').replace(/s([^aeiou])/g,'se$1')
+        let postprocessed = phonemes.join('').replace(/\*/g,' ')
+                                             .replace(/s([^aeiou])/g,'se$1')
                                              .replace(/t([^aeiou])/g,'ta$1')
-                                             .replace(/d([^aeou])/g,'da$1')
+                                             .replace(/d([^aeiou])/g,'da$1')
                                              .replace(/p([^aeiou])/g,'pu$1')
                                              .replace(/k([^aeiou])/g,'ku$1')
-                                             .replace(/g([^aeiou])/g,'gu$1')
                                              .replace(/z([^aeiou])/g,'ze$1')
+                                             .replace(/m([^aeiou])/g,'ma$1')
+                                             .replace(/r([^aeiou])/g,'ra$1')
                                              .replace(/hu+/g,'ha')
                                              .replace(/si+/g,'shi')
                                              .replace(/gua/g,'ga')
                                              .replace(/che/g,'chi')
-                                             .replace(/([kgsztdnhbpmyrwf])(\s|$)/g,'$1u$2');
+                                             .replace(/faa/g,'fua')
+                                             .replace(/([kgsztdnhbpmyrwf])(\s|$)/g,'$1u$2')
+                                             .replace(/g([^aeiou])/g,'gu$1');
 
         console.log('Postprocess:', postprocessed);
 

@@ -15,7 +15,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
 
     let oterm = term;
 
-    term = term.replace(/[0-9]+/g, num=>num.split('').join(' ')).replace(/n[kc]/g,'n').replace(/_/g,'');
+    term = term.replace(/[0-9]{3,}/g, num=>num.split('').join(' ')).replace(/_/g,'');
 
     let conversion = converter.convert(term);
     if (conversion) {
@@ -50,10 +50,10 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
         }
         transcription = trbuffer.toString('utf-8').trim();
         console.log('espeak-ng IPA:',transcription.replace(/@/gu,''));
-        let phonemes = transcription.replace(/[ˈˌ]/gu,'').replace(/\s/gu,'*@').replace(/ŋ@ɡ/gu,'ŋ').replace(/k@æ/gu,'kya').replace(/j@?uː/gu,'yuu').split('@').map(
+        let phonemes = `${transcription}*`.replace(/[ˈˌ]/gu,'').replace(/\s/gu,'*@').replace(/ŋ@k/gu,'nk').replace(/ŋ@ɡ/gu,'ŋ').replace(/k@æ/gu,'kya').replace(/j@?uː/gu,'yuu').split('@').map(
             ph=>ph.replace(/eɪ/gu,'ei')             // diphthongs
                   .replace(/aɪ/gu,'aii')
-                  .replace(/ɔɪ/gu,'oii')
+                  .replace(/ɔɪ/gu,'oi')
                   .replace(/oʊ/gu,'oo')
                   .replace(/əʊ/gu,'ou')
                   .replace(/aʊ/gu,'au')
@@ -64,7 +64,8 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                   .replace(/ɑ|ɐ|ə/gu,'a')           // vowels
                   .replace(/æ/gu,'a')
                   .replace(/ɛ/gu,'e')
-                  .replace(/ɪ|i/,'i')
+                  .replace(/i\*/gu,'ii')
+                  .replace(/ɪ|i/gu,'i')
                   .replace(/ɔː/gu,'ou')
                   .replace(/ɔ|ɒ/gu,'o')
                   .replace(/ʌ|ʊ|u/gu,'u')
@@ -84,6 +85,10 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
         console.log('espeak-ng phonemes:', phonemes);
 
         let postprocessed = phonemes.join('').replace(/\*/g,' ')
+                                             .replace(/([kgszdnhbpmyrwf])(\s|$)/g,'$1u$2')
+                                             .replace(/t(\s|$)/g,'to$1')
+                                             .replace(/v(\s|$)/g,'fu$1')
+                                             .replace(/v/g,'bu')
                                              .replace(/s([^aeiou])/g,'se$1')
                                              .replace(/t([^aeiou])/g,'ta$1')
                                              .replace(/d([^aeiou])/g,'da$1')
@@ -92,17 +97,30 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                                              .replace(/z([^aeiou])/g,'ze$1')
                                              .replace(/m([^aeiou])/g,'ma$1')
                                              .replace(/r([^aeiou])/g,'ra$1')
+                                             .replace(/di/g,'dei')
                                              .replace(/hu+/g,'ha')
-                                             .replace(/si+/g,'shi')
+                                             .replace(/si/g,'shi')
+                                             .replace(/si+/g,'shii')
                                              .replace(/gua/g,'ga')
                                              .replace(/che/g,'chi')
                                              .replace(/faa/g,'fua')
-                                             .replace(/([kgsztdnhbpmyrwf])(\s|$)/g,'$1u$2')
                                              .replace(/g([^aeiou])/g,'gu$1');
 
         console.log('Postprocess:', postprocessed);
 
         conversion = converter.convert(postprocessed);
+
+        if (conversion.katakana) {
+            conversion.katakana = conversion.katakana.replace(/([アイウエオ])\1/gu,'$1ー').replace(/(.)([アイウエオ])/gu,(_,ch,vowel)=>{
+                console.log(ch, vowel);
+                let chr = wanakana.toRomaji(ch).split('').pop();
+                let vr = wanakana.toRomaji(vowel);
+                console.log(chr, vr);
+                if (chr!==vr) return `${ch}${vowel}`
+                return `${ch}ー`
+            });
+        }
+
         console.log(conversion);
         resolve(conversion.katakana);
     });

@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client({
     disableMentions: 'everyone',
     ws: {
-        intents: 'GUILD_PRESENCES'
+        intents: 'GUILD_MEMBERS'
     }
 });
 const { Client: pgClient } = require('pg');

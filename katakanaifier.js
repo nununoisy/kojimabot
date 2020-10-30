@@ -64,7 +64,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                   .replace(/ɑ|ɐ|ə/gu,'a')           // vowels
                   .replace(/æ/gu,'a')
                   .replace(/ɛ/gu,'e')
-                  .replace(/i\*/gu,'ii')
+                  .replace(/i\*/gu,'ii*')
                   .replace(/ɪ|i/gu,'i')
                   .replace(/ɔː/gu,'ou')
                   .replace(/ɔ|ɒ/gu,'o')
@@ -104,7 +104,8 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                                              .replace(/gua/g,'ga')
                                              .replace(/che/g,'chi')
                                              .replace(/faa/g,'fua')
-                                             .replace(/g([^aeiou])/g,'gu$1');
+                                             .replace(/g([^aeiou])/g,'gu$1')
+                                             .trim();
 
         console.log('Postprocess:', postprocessed);
 

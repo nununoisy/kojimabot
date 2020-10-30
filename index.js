@@ -1,5 +1,10 @@
 const Discord = require('discord.js');
-const client = new Discord.Client({disableMentions: 'everyone'});
+const client = new Discord.Client({
+    disableMentions: 'everyone',
+    ws: {
+        intents: 'GUILD_PRESENCES'
+    }
+});
 const { Client: pgClient } = require('pg');
 
 const kojimaizer = require('./kojimaizer');

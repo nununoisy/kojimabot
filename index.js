@@ -84,7 +84,7 @@ setInterval(()=>{
     let count = 0;
     console.log(`Evaluating whether to send messages to ${guilds.length} guilds`);
     guilds.forEach((guild, idx) => {
-        if (guild.destChannel && guild.lastUsername && guild.greetInt && guild.greetedLast && Math.floor(Math.abs(new Date() - guild.greetedLast)/60000) >= guild.greetInt) {
+        if (guild.destChannel && guild.lastUsername && guild.greetInt && guild.greetedLast && Math.floor(Math.abs(new Date() - guild.greetedLast)/60000) >= guild.greetInt && guild.greetInt > 0) {
             count++;
             if (typeof guild.destChannel === 'string') {
                 console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
@@ -185,7 +185,7 @@ client.on('message', message => {
     if (message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
         if (message.content.indexOf('help') > -1) {
             message.react('📤');
-            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes\n `@HIDEO_KOJIMA togglejp` - Toggle Japanese Mode. Japanese Mode Requires Manage Webhooks Permissions').catch(e=>console.log(`Error sending message: ${e}`));
+            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes - Set To 0 To Disable Random Greetings\n `@HIDEO_KOJIMA togglejp` - Toggle Japanese Mode. Japanese Mode Requires Manage Webhooks Permissions').catch(e=>console.log(`Error sending message: ${e}`));
         } else if (message.content.indexOf('setchannel') > -1) {
             let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);

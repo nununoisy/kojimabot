@@ -6,6 +6,7 @@ const client = new Discord.Client({
     }
 });
 const { Client: pgClient } = require('pg');
+const fetch = require('node-fetch');
 
 const kojimaizer = require('./kojimaizer');
 const katakanaifier = require('./katakanaifier');
@@ -24,10 +25,30 @@ pgclient.connect();
 
 let guilds = [];
 
+const postBotStats = () => {
+    let totalMembers = client.guilds.cache.reduce((a,c)=>a+c.memberCount,0);
+    let totalGuilds = client.guilds.cache.size();
+    console.log(`${totalMembers} in ${totalGuilds}`);
+    // todo dbl (top.gg)
+    // discordbotlist.com
+    fetch(`https://discordbotlist.com/api/v1/bots/${client.user.id}/stats`, {
+        method: 'POST',
+        headers: {
+            'Authorization': process.env.DBOTTOKEN,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            users: totalMembers,
+            guilds: totalGuilds
+        })
+    })
+};
+
 client.once('ready', () => {
     client.user.setActivity("Hi Sponge Bob"); 
     console.log('Login success');
     console.log(client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount })));
+    postBotStats();
 });
 
 const sendMessageInGuild = (guild, message, messagejp) => {
@@ -196,6 +217,16 @@ client.on('message', message => {
     if (message.channel.id !== cidtest) return;
     guilds[guildObjIdx].lastUsername = message.author.username;
     console.log(guilds[guildObjIdx].lastUsername);
+});
+
+client.on('guildCreate', guild=>{
+    console.log(`Joined new guild ${guild.name}!`);
+    postBotStats();
+});
+
+client.on('guildDelete', guild=>{
+    console.log(`Left guild ${guild.name} ${guild.id}`);
+    postBotStats();
 });
 
 console.log('espeak-ng debug');

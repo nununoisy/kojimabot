@@ -26,6 +26,7 @@
     "compromise-syllables": "0.0.4",
     "discord.js": "^12.4.1",
     "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
     "pg": "^8.4.2",
     "wanakana": "^4.0.2"
   }

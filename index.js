@@ -27,7 +27,7 @@ let guilds = [];
 
 const postBotStats = () => {
     let totalMembers = client.guilds.cache.reduce((a,c)=>a+c.memberCount,0);
-    let totalGuilds = client.guilds.cache.size();
+    let totalGuilds = client.guilds.cache.size;
     console.log(`${totalMembers} in ${totalGuilds}`);
     // todo dbl (top.gg)
     // discordbotlist.com

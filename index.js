@@ -42,6 +42,17 @@ const postBotStats = () => {
             guilds: totalGuilds
         })
     })
+    // discord.bots.gg
+    fetch(`https://discord.bots.gg/api/v1/bots/${client.user.id}/stats`, {
+        method: 'POST',
+        headers: {
+            'Authorization': process.env.BOTSGGTOKEN,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            guildCount: totalGuilds
+        })
+    })
 };
 
 client.once('ready', () => {

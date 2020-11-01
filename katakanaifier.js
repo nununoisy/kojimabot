@@ -99,6 +99,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                                              .replace(/z([^aeiou])/g,'ze$1')
                                              .replace(/m([^aeiou])/g,'ma$1')
                                              .replace(/r([^aeiou])/g,'ra$1')
+                                             .replace(/b([^aeiou])/g,'ba$1')
                                              .replace(/di/g,'dei')
                                              .replace(/hu+/g,'ha')
                                              .replace(/si/g,'shi')

@@ -53,6 +53,17 @@ const postBotStats = () => {
             guildCount: totalGuilds
         })
     })
+    // bots.ondiscord.xyz
+    fetch(`https://bots.ondiscord.xyz/bot-api/bots/${client.user.id}/guilds`, {
+        method: 'POST',
+        headers: {
+            'Authorization': process.env.BOTSONDISCORDTOKEN,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            guildCount: totalGuilds
+        })
+    })
 };
 
 client.once('ready', () => {

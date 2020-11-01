@@ -13,43 +13,43 @@ let jp = false;
 
 const savebtn = document.querySelector('#save');
 
+let controller = new AbortController();
+
 datefield.innerHTML = `${(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"])[now.getMonth()]} ${now.getDate()}`;
 
 const setJP = () => {
+    controller.abort();
+    controller = new AbortController();
     window.location.hash = (jp ? 'jp:' : '') + window.location.hash.replace(/^#(jp:)?/,'');
     if (jp) {
         img.src = '/img/kojimajp.jpg';
         fname.innerHTML = '小島秀夫';
-        uname.innerHTML = '@Kojima_Hideo ·&nbsp;';
+        uname.innerHTML = '@Kojima_Hideo';
     } else {
         img.src = '/img/kojima.jpg';
         fname.innerHTML = 'HIDEO_KOJIMA';
-        uname.innerHTML = '@HIDEO_KOJIMA_EN ·&nbsp;';
+        uname.innerHTML = '@HIDEO_KOJIMA_EN';
+    }
+    if (input.value === '') {
+        output.innerHTML = jp ? "こんにちは セプンチャ ボブ" : "Hi Sponge Bob";
+        return;
     }
     spinner.style.display = 'inline-block';
     output.innerHTML = '';
     fetch(jp ? '/katakanaize' : '/kojimaize', {
         method: 'POST',
-        body: input.value
+        body: input.value,
+        signal: controller.signal
     }).then(r=>r.text()).then(response=>{
         spinner.style.display = 'none';
         output.innerHTML = response;
-    });
+    }).catch(err=>console.log(err));
 }
 
 if (window.location.hash) {
     input.value = decodeURI(window.location.hash.replace(/^#(jp:)?/,''));
     jp = window.location.hash.startsWith('#jp:');
     setJP();
-    spinner.style.display = 'inline-block';
-    output.innerHTML = '';
-    fetch(jp ? '/katakanaize' : '/kojimaize', {
-        method: 'POST',
-        body: input.value
-    }).then(r=>r.text()).then(response=>{
-        spinner.style.display = 'none';
-        output.innerHTML = response;
-    });
 } else {
     input.value = "SpongeBob";
 }
@@ -67,13 +67,7 @@ input.addEventListener('input', e=>{
     }
     spinner.style.display = 'inline-block';
     output.innerHTML = '';
-    fetch(jp ? '/katakanaize' : '/kojimaize', {
-        method: 'POST',
-        body: e.target.value
-    }).then(r=>r.text()).then(response=>{
-        spinner.style.display = 'none';
-        output.innerHTML = response;
-    });
+    setJP();
 });
 
 savebtn.addEventListener('click', ()=>{

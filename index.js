@@ -255,11 +255,6 @@ client.on('guildDelete', guild=>{
     postBotStats();
 });
 
-console.log('espeak-ng debug');
-const { spawnSync } = require('child_process');
-let espeaktestbuf = spawnSync('espeak-ng', ['--path=/app/.apt/usr/lib/x86_64-linux-gnu/espeak-ng-data/', '-x','--ipa','-q','--sep=@', 'test']);
-console.log(espeaktestbuf);
-
 console.log('Querying postgresql db');
 pgclient.query('SELECT * FROM guilds;', (err, res)=>{
     if (err) throw err;

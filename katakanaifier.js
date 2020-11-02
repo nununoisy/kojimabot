@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const espeakng = require('./espeak-ng');
 const wanakana = require('wanakana');
 const converter = { convert: term=>{
     if (wanakana.isKana(wanakana.toKana(term.replace(/[\s_]/g,'')))) {
@@ -28,23 +28,8 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
 
     console.log('Preprocess:',term);
 
-    let trbuffer = null;
-    let transcription = '';
-
-    console.log(`Executing: espeak-ng -x --ipa -q --sep=@ '${term}'`);
-    const transcriber = spawn('espeak-ng', ['--path=/app/.apt/usr/lib/x86_64-linux-gnu/espeak-ng-data/', '-x','--ipa','-q','--sep=@', term]);
-    transcriber.stdout.on('data', (data) => {
-        if (trbuffer) {
-            trbuffer = Buffer.concat([trbuffer, data], trbuffer.length+data.length)
-        } else {
-            trbuffer = Buffer.from(data);
-        }
-    });
-    transcriber.stderr.on('data', data=>{
-        console.log(`espeak-ng stderr:`, data.toString('utf-8'));
-    });
-    transcriber.stdout.on('close', () => {
-        if (!trbuffer) {
+    espeakng(term).then(transcription=>{
+        if (!transcription) {
             resolve(`【${oterm}】`);
             return;
         }
@@ -63,10 +48,10 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                   .replace(/ə\*/gu,'aa*')
                   .replace(/ɑ|ɐ|ə/gu,'a')           // vowels
                   .replace(/æ/gu,'a')
-                  .replace(/ɜː/gu,'uer')
+                  .replace(/ɜː/gu,'uur')
                   .replace(/ɜ/gu,'er')
                   .replace(/ɛ/gu,'e')
-                  .replace(/i\*/gu,'ii*')
+                  .replace(/i\*/gu,'ii')
                   .replace(/ɪ|i/gu,'i')
                   .replace(/ɔː/gu,'ou')
                   .replace(/ɔ|ɒ/gu,'o')
@@ -87,10 +72,13 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
         console.log('espeak-ng phonemes:', phonemes);
 
         let postprocessed = phonemes.join('').replace(/\*/g,' ')
-                                             .replace(/([kgszdnhbpmyrwf])(\s|$)/g,'$1u$2')
+                                             .replace(/([kgsznhbpmyrf])(\s|$)/g,'$1u$2')
                                              .replace(/t(\s|$)/g,'to$1')
                                              .replace(/v(\s|$)/g,'fu$1')
+                                             .replace(/w(\s|$)/g,'wa$1')
+                                             .replace(/d(\s|$)/g,'do$1')
                                              .replace(/v/g,'bu')
+                                             .replace(/uur+/g,'uur')
                                              .replace(/s([^aeiou])/g,'se$1')
                                              .replace(/t([^aeiou])/g,'ta$1')
                                              .replace(/d([^aeiou])/g,'da$1')
@@ -107,6 +95,7 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
                                              .replace(/gua/g,'ga')
                                              .replace(/che/g,'chi')
                                              .replace(/faa/g,'fua')
+                                             .replace(/rd/g,'rud')
                                              .replace(/g([^aeiou])/g,'gu$1')
                                              .trim();
 

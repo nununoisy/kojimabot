@@ -7,6 +7,8 @@ const client = new Discord.Client({
 });
 const { Client: pgClient } = require('pg');
 const fetch = require('node-fetch');
+const DBL = require('dblapi.js');
+const dbl = new DBL(process.env.DBLTOKEN, client);
 
 const kojimaizer = require('./kojimaizer');
 const katakanaifier = require('./katakanaifier');
@@ -29,7 +31,7 @@ const postBotStats = () => {
     let totalMembers = client.guilds.cache.reduce((a,c)=>a+c.memberCount,0);
     let totalGuilds = client.guilds.cache.size;
     console.log(`${totalMembers} in ${totalGuilds}`);
-    // todo dbl (top.gg)
+    // dbl handled by module
     // discordbotlist.com
     fetch(`https://discordbotlist.com/api/v1/bots/${client.user.id}/stats`, {
         method: 'POST',
@@ -65,6 +67,8 @@ const postBotStats = () => {
         })
     })
 };
+
+dbl.on('posted', postBotStats);
 
 client.once('ready', () => {
     client.user.setActivity("Hi Sponge Bob"); 

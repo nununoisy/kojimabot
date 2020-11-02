@@ -33,7 +33,6 @@ const katakanaifier = term => new Promise((resolve,reject)=>{
             resolve(`【${oterm}】`);
             return;
         }
-        transcription = trbuffer.toString('utf-8').trim();
         console.log('espeak-ng IPA:',transcription.replace(/@/gu,''));
         let phonemes = `${transcription}*`.replace(/[ˈˌ]/gu,'').replace(/\s/gu,'*@').replace(/ŋ@k/gu,'nk').replace(/ŋ@ɡ/gu,'ŋ').replace(/k@æ/gu,'kya').replace(/j@?uː/gu,'yuu').split('@').map(
             ph=>ph.replace(/eɪ/gu,'ei')             // diphthongs

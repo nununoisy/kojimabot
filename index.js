@@ -198,7 +198,7 @@ client.on('message', message => {
         pgclient.query(`INSERT INTO guilds (gid, cid) VALUES ('${message.guild.id}','0');`);
     }
     if (message.channel.type==='dm') console.log('Got DM');
-    if (((message.guild && message.member && message.mentions.has(message.guild.id)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
+    if (((message.guild && message.member && message.mentions.has(message.guild.me)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
         console.log('Sending help');
         const prefix = `@HIDEO_KOJIMA`;
         const helpEmbed = new Discord.MessageEmbed()

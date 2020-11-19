@@ -276,7 +276,7 @@ client.on('message', message => {
         }
     }
     if (message.guild) {
-        if ((message.member && (message.member.id === message.guild.me.id)) || !guilds[guildObjIdx].destChannel) return;
+        if ((message.member && (message.member.id === message.guild.me.id)) || message.webhookID || !guilds[guildObjIdx].destChannel) return;
         let cidtest = guilds[guildObjIdx].destChannel;
         if (typeof cidtest !== 'string') cidtest = cidtest.id;
         if (message.channel.id !== cidtest) return;

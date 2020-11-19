@@ -220,7 +220,7 @@ client.on('message', message => {
                 { name: `${prefix} hi`, value: 'Have HIDEO Greet You In Exchange For 1 Credit' },
                 { name: `checkbalance (DMs)`, value: 'See How Many Credits You Have' },
             );
-        if (message.guild) message.author.send(helpEmbed).then(()=>message.react('📤'));
+        if (message.guild) message.author.send(helpEmbed).then(()=>message.react('📤').catch(()=>console.log("Couldn't react"))).catch(()=>console.log("Couldn't send DM"));
         else message.channel.send(helpEmbed);
         return;
     } else if (message.channel.type==='dm' && message.content.indexOf('checkbalance') > -1 && !message.author.bot) {

@@ -1,7 +1,7 @@
 const espeakng = require('./espeak-ng');
 const wanakana = require('wanakana');
 const converter = { convert: term=>{
-    if (wanakana.isKana(wanakana.toKana(term.replace(/[\s_]/g,'')))) {
+    if (wanakana.isKana(wanakana.toKana(term.replace(/[\s_]/g,''))) || wanakana.isKanji(term)) {
         return {
             hiragana: wanakana.toHiragana(term),
             katakana: wanakana.toKatakana(term),

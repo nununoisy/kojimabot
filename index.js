@@ -197,12 +197,43 @@ client.on('message', message => {
         });
         pgclient.query(`INSERT INTO guilds (gid, cid) VALUES ('${message.guild.id}','0');`);
     }
-    if (message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
-        if (message.content.indexOf('help') > -1) {
-            message.react('📤');
-            message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes - Set To 0 To Disable Random Greetings\n `@HIDEO_KOJIMA togglejp` - Toggle Japanese Mode. Japanese Mode Requires Manage Webhooks Permissions').catch(e=>console.log(`Error sending message: ${e}`));
-            return;
-        } else if (message.content.indexOf('setchannel') > -1) {
+    if (((message.guild && message.mentions.has(message.guild.id)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
+        const prefix = `${message.guild.me}`;
+        const helpEmbed = new Discord.MessageEmbed()
+            .setColor('#1DA1F2')
+            .setTitle('HIDEO_KOJIMA Help')
+            .setURL('https://kojimaize.xyz/')
+            .setDescription('Hi Admin\n\nHere Are My Commands:')
+            .setThumbnail('https://kojimaize.xyz/img/kojima.jpg')
+            .addFields(
+                { name: `${prefix} help`, value: 'DM My Commands To You' },
+                { name: `help (DMs)`, value: 'DM My Commands To You' },
+                { name: `${prefix} setchannel \`<channel>\``, value: 'Set The Channel Where I Send Messages To' },
+                { name: `${prefix} togglewelcome`, value: 'Enable Or Disable Welcome Messages' },
+                { name: `${prefix} togglefarewell`, value: 'Enable Or Disable Leave Messages' },
+                { name: `${prefix} setinterval \`<interval>\``, value: 'Set Random User Greet Interval To <interval> - Set To 0 To Disable Random Greetings' },
+                { name: `${prefix} togglejp`, value: 'Toggle Japanese Mode - Requires KojimaBot To Have Manage Webhooks Permissions' },
+                { name: '\u200B', value: '\u200B' },
+                { name: 'Vote Greets', value: 'If You Vote For KojimaBot On [Top.gg](https://top.gg/bot/753757823535677561) Or [DiscordBotList](https://discord.ly/hideokojima) You Will Recieve A Credit.'},
+                { name: `${prefix} hi`, value: 'Have HIDEO Greet You In Exchange For 1 Credit' },
+                { name: `checkbalance (DMs)`, value: 'See How Many Credits You Have' },
+            );
+        message.channel.send(helpEmbed).then(()=>{
+            if (message.guild) message.react('📤');
+        })
+        return;
+    } else if (message.channel.type==='dm' && message.content.indexOf('checkbalance') > -1 && !message.author.bot) {
+        pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
+            if (err) throw err;
+            console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);
+            let votecount = 0;
+            if (res.rows.length > 0) {
+                votecount = res.rows[0].count;
+            }
+            message.channel.send(`Current Balance Is ${votecount} Credits`);
+        })
+    } else if (message.guild && message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
+        if (message.content.indexOf('setchannel') > -1) {
             let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
             if (perms.has('SEND_MESSAGES')) {
@@ -247,7 +278,7 @@ client.on('message', message => {
     if (typeof cidtest !== 'string') cidtest = cidtest.id;
     if (message.channel.id !== cidtest) return;
 
-    if (message.mentions.has(message.guild.me)) {
+    if (message.mentions.has(message.guild.me) && message.content.indexOf('hi') > -1) {
         pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
             if (err) throw err;
             console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);

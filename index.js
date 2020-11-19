@@ -220,9 +220,8 @@ client.on('message', message => {
                 { name: `${prefix} hi`, value: 'Have HIDEO Greet You In Exchange For 1 Credit' },
                 { name: `checkbalance (DMs)`, value: 'See How Many Credits You Have' },
             );
-        message.channel.send(helpEmbed).then(()=>{
-            if (message.guild) message.react('📤');
-        })
+        if (message.guild) message.channel.send(helpEmbed).then(()=>message.react('📤'));
+        else message.author.send(helpEmbed);
         return;
     } else if (message.channel.type==='dm' && message.content.indexOf('checkbalance') > -1 && !message.author.bot) {
         pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{

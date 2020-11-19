@@ -201,6 +201,7 @@ client.on('message', message => {
         if (message.content.indexOf('help') > -1) {
             message.react('📤');
             message.author.send('Hi Admin\n\nHere Are My Commands:\n `@HIDEO_KOJIMA help` - DM My Commands To You\n `@HIDEO_KOJIMA setchannel` - Set The Channel Where I Send Messages To The Channel Where You Entered The Command\n `@HIDEO_KOJIMA setchannel <channel>` - Set The Channel Where I Send Messages To <channel>\n `@HIDEO_KOJIMA togglewelcome` - Enable Or Disable Welcome Messages\n `@HIDEO_KOJIMA togglefarewell` - Enable Or Disable Farewell Messages\n `@HIDEO_KOJIMA setinterval <interval>` - Set Random User Greet Interval To <interval> Minutes - Set To 0 To Disable Random Greetings\n `@HIDEO_KOJIMA togglejp` - Toggle Japanese Mode. Japanese Mode Requires Manage Webhooks Permissions').catch(e=>console.log(`Error sending message: ${e}`));
+            return;
         } else if (message.content.indexOf('setchannel') > -1) {
             let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
@@ -212,30 +213,34 @@ client.on('message', message => {
             } else {
                 message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${channel.name} So I Did Not Change The Channel`).catch(e=>console.log(`Error sending message: ${e}`));
             }
+            return;
         } else if (message.content.indexOf('togglewelcome') > -1) {
             guilds[guildObjIdx].entermessage = !guilds[guildObjIdx].entermessage;
             console.log(`${guilds[guildObjIdx].entermessage ? 'Enabled' : 'Disabled'} welcome for ${guilds[guildObjIdx].id}`);
             message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].entermessage ? 'Now' : 'Not'} Greet People When They Join`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET entermsg='${guilds[guildObjIdx].entermessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
+            return;
         } else if (message.content.indexOf('togglefarewell') > -1) {
             guilds[guildObjIdx].leavemessage = !guilds[guildObjIdx].leavemessage;
             console.log(`${guilds[guildObjIdx].leavemessage ? 'Enabled' : 'Disabled'} farewell for ${guilds[guildObjIdx].id}`);
             message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET leavemsg='${guilds[guildObjIdx].leavemessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
+            return;
         } else if (message.content.indexOf('togglejp') > -1) {
             guilds[guildObjIdx].jpenabled = !guilds[guildObjIdx].jpenabled;
             console.log(`${guilds[guildObjIdx].jpenabled ? 'Enabled' : 'Disabled'} japanese mode for ${guilds[guildObjIdx].id}`);
             message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese${guilds[guildObjIdx].jpenabled ? '\nMake Sure To Give Me Manage Webhooks Permissions' : ''}`).catch(e=>console.log(`Error sending message: ${e}`));
             pgclient.query(`UPDATE guilds SET jpenabled='${guilds[guildObjIdx].jpenabled}' WHERE gid='${guilds[guildObjIdx].id}';`);
+            return;
         } else if (message.content.indexOf('setinterval') > -1) {
             let interv = intervalToMin(message.content.split(' ').pop());
             if (isNaN(interv)) return;
             guilds[guildObjIdx].greetInt = interv;
             console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
             message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${minToInterval(interv)}`).catch(e=>console.log(`Error sending message: ${e}`));
-            pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`)
+            pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`);
+            return;
         }
-        return;
     }
     if (message.member.id === message.guild.me.id || !guilds[guildObjIdx].destChannel) return;
     let cidtest = guilds[guildObjIdx].destChannel;

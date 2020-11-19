@@ -303,12 +303,13 @@ client.on('message', message => {
                             console.log('Saying hi to', message.author.username);
                             katakanaifier(message.author.username).then(jp=>{
                                 sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
-                            });
+                            }).catch(e=>console.log('espeak error', e));
                         }).catch(()=>console.log(`Couldn't fetch guild ${guilds[guildObjIdx].id}, maybe the bot was kicked?`));
                     } else {
+                        console.log('Saying hi to', message.author.username);
                         katakanaifier(message.author.username).then(jp=>{
                             sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
-                        });
+                        }).catch(e=>console.log('espeak error', e));
                     }
                     pgclient.query(`UPDATE votes SET count=${votecount-1} WHERE uid='${message.author.id}'`);
                 }

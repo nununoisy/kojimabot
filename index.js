@@ -260,7 +260,7 @@ client.on('message', message => {
                     console.log(`Resolving channel ${guilds[guildObjIdx].destChannel} for guild ${guilds[guildObjIdx].id}`);
                     client.guilds.fetch(guilds[guildObjIdx].id).then(guildobj=>{
                         let bak = guilds[guildObjIdx].destChannel;
-                        guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
+                        guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guilds[guildObjIdx].destChannel);
                         if (!guilds[guildObjIdx].destChannel) {
                             guilds[guildObjIdx].destChannel = bak;
                             console.log(`Couldn't resolve channel ${guilds[guildObjIdx].destChannel} in ${guilds[guildObjIdx].id}.`);

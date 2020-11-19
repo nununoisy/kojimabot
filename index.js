@@ -300,6 +300,7 @@ client.on('message', message => {
                                 console.log(`Couldn't resolve channel ${guilds[guildObjIdx].destChannel} in ${guilds[guildObjIdx].id}.`);
                                 return;
                             }
+                            console.log('Saying hi to', message.author.username);
                             katakanaifier(message.author.username).then(jp=>{
                                 sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
                             });

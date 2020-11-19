@@ -1,5 +1,7 @@
+const worker = require('./espeakng.worker');
+
 module.exports = async word => {
-    const espeakng = await require('./espeakng.worker');
+    const espeakng = await Promise.resolve(worker);
 
     const res = espeakng.synthesize_ipa(word);
 

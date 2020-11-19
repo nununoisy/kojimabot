@@ -70,6 +70,7 @@ app.post('/webhooks/dbotlist', (req, res)=>{
         return;
     }
     pgclient.query(`INSERT INTO votes (uid, count) VALUES ('${req.body.id}', 1) ON CONFLICT (uid) DO UPDATE SET count = excluded.count + votes.count;`);
+    res.send("Success");
 });
 
 const port = process.env.PORT || 3000;

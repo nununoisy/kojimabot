@@ -181,7 +181,7 @@ client.on('guildMemberRemove', member => {
 });
 
 client.on('message', message => {
-    if (!message || !message.guild || !message.member) return;
+    if (!message) return;
     let guildObjIdx = guilds.findIndex(guild=>guild.id===message.guild.id);
     if (guildObjIdx === -1) {
         guildObjIdx = guilds.length;
@@ -198,7 +198,7 @@ client.on('message', message => {
         pgclient.query(`INSERT INTO guilds (gid, cid) VALUES ('${message.guild.id}','0');`);
     }
     if (message.channel.type==='dm') console.log('Got DM');
-    if (((message.guild && message.mentions.has(message.guild.id)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
+    if (((message.guild && message.member && message.mentions.has(message.guild.id)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
         console.log('Sending help');
         const prefix = `${message.guild.me}`;
         const helpEmbed = new Discord.MessageEmbed()
@@ -234,7 +234,7 @@ client.on('message', message => {
             }
             message.channel.send(`Current Balance Is ${votecount} Credits`);
         })
-    } else if (message.guild && message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
+    } else if (message.guild && message.member && message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
         if (message.content.indexOf('setchannel') > -1) {
             let channel = message.mentions.channels.first() || message.channel;
             let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);

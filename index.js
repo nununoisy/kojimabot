@@ -205,7 +205,7 @@ client.on('message', message => {
             .setColor('#1DA1F2')
             .setTitle('HIDEO_KOJIMA Help')
             .setURL('https://kojimaize.xyz/')
-            .setDescription('Hi Admin\n\nHere Are My Commands:')
+            .setDescription(`${kojimaizer(message.author.username)}\n\nHere Are My Commands:`)
             .setThumbnail('https://kojimaize.xyz/img/kojima.jpg')
             .addFields(
                 { name: `${prefix} help`, value: 'DM My Commands To You' },

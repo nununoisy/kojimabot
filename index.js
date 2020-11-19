@@ -231,7 +231,7 @@ client.on('message', message => {
             if (res.rows.length > 0) {
                 votecount = res.rows[0].count;
             }
-            message.channel.send(`Current Balance Is ${votecount} Credits\n\nVote On Top.gg (https://top.gg/bot/753757823535677561) Or DiscordBotList https://discord.ly/hideokojima To Get More`);
+            message.channel.send(`Current Balance Is ${votecount} Credits\n\nVote On Top.gg https://top.gg/bot/753757823535677561 Or DiscordBotList https://discord.ly/hideokojima To Get More`);
         })
     } else if (message.guild && message.member && message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
         if (message.content.indexOf('setchannel') > -1) {
@@ -312,7 +312,7 @@ client.on('message', message => {
                     }
                     pgclient.query(`UPDATE votes SET count=${votecount-1} WHERE uid='${message.author.id}'`);
                 } else {
-                    message.author.send(`You Have No Credits Left\n\nVote On Top.gg (https://top.gg/bot/753757823535677561) Or DiscordBotList https://discord.ly/hideokojima To Get More`)
+                    message.author.send(`You Have No Credits Left\n\nVote On Top.gg https://top.gg/bot/753757823535677561 Or DiscordBotList https://discord.ly/hideokojima To Get More`)
                 }
             })
         }

@@ -182,7 +182,7 @@ client.on('guildMemberRemove', member => {
 
 client.on('message', message => {
     if (!message) return;
-    let guildObjIdx = guilds.findIndex(guild=>guild.id===message.guild.id);
+    let guildObjIdx = message.guild ? guilds.findIndex(guild=>guild.id===message.guild.id) : -2;
     if (guildObjIdx === -1) {
         guildObjIdx = guilds.length;
         guilds.push({

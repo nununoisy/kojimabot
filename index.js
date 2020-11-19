@@ -200,7 +200,7 @@ client.on('message', message => {
     if (message.channel.type==='dm') console.log('Got DM');
     if (((message.guild && message.member && message.mentions.has(message.guild.id)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
         console.log('Sending help');
-        const prefix = `<@!${client.user.id}>`;
+        const prefix = `@HIDEO_KOJIMA`;
         const helpEmbed = new Discord.MessageEmbed()
             .setColor('#1DA1F2')
             .setTitle('HIDEO_KOJIMA Help')

@@ -241,6 +241,40 @@ client.on('message', message => {
     let cidtest = guilds[guildObjIdx].destChannel;
     if (typeof cidtest !== 'string') cidtest = cidtest.id;
     if (message.channel.id !== cidtest) return;
+
+    if (message.mentions.has(message.guild.me)) {
+        pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
+            if (err) throw err;
+            console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);
+            let votecount = 0;
+            if (res.rows.length > 0) {
+                votecount = res.rows[0].count;
+            }
+            if (votecount > 0) {
+                if (typeof guilds[guildObjIdx].destChannel === 'string') {
+                    console.log(`Resolving channel ${guilds[guildObjIdx].destChannel} for guild ${guilds[guildObjIdx].id}`);
+                    client.guilds.fetch(guilds[guildObjIdx].id).then(guildobj=>{
+                        let bak = guilds[guildObjIdx].destChannel;
+                        guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
+                        if (!guilds[guildObjIdx].destChannel) {
+                            guilds[guildObjIdx].destChannel = bak;
+                            console.log(`Couldn't resolve channel ${guilds[guildObjIdx].destChannel} in ${guilds[guildObjIdx].id}.`);
+                            return;
+                        }
+                        katakanaifier(message.author.username).then(jp=>{
+                            sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
+                        });
+                    }).catch(()=>console.log(`Couldn't fetch guild ${guilds[guildObjIdx].id}, maybe the bot was kicked?`));
+                } else {
+                    katakanaifier(message.author.username).then(jp=>{
+                        sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
+                    });
+                }
+                pgclient.query(`UPDATE votes SET count=${votecount-1} WHERE uid='${message.author.id}'`);
+            }
+        })
+    }
+
     guilds[guildObjIdx].lastUsername = message.author.username;
     console.log(guilds[guildObjIdx].lastUsername);
 });

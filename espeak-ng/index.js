@@ -10,7 +10,7 @@ module.exports = async word => {
         if (res.code === 0) return res.ipa;
         throw new Error(`espeak-ng failed with code ${res.code}`);
     } catch (e) {
-        console.log('ESPEAK-NG ERROR '+e);
+        console.error('ESPEAK-NG ERROR '+e);
         throw e;
     }
 }

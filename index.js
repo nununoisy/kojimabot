@@ -18,6 +18,36 @@ const { intervalToMin, minToInterval } = require('./intervalHelper');
 
 const postgresdate = d => `${d.getUTCFullYear()}-${('00'+(d.getUTCMonth()+1)).slice(-2)}-${('00'+d.getUTCDate()).slice(-2)} ${('00'+d.getUTCHours()).slice(-2)}:${('00'+d.getUTCMinutes()).slice(-2)}:${('00'+d.getUTCSeconds()).slice(-2)}`;
 
+if (process.env.STATUS_WEBHOOK_ID && process.env.STATUS_WEBHOOK_TOKEN) {
+    const statusWebhook = new Discord.WebhookClient(process.env.STATUS_WEBHOOK_ID, process.env.STATUS_WEBHOOK_TOKEN);
+
+    statusWebhook.send("KojimaBot is starting...");
+
+    process.on('cleanup', ()=>{
+        console.log('KojimaBot process exiting...');
+    });
+
+    process.on('exit', ()=>{
+        process.emit('cleanup');
+    });
+
+    process.on('SIGINT',  ()=>{
+        statusWebhook.send('KojimaBot process caught SIGINT');
+        process.exit(2);
+    });
+
+    process.on('uncaughtException', e=>{
+        statusWebhook.send('KojimaBot encountered an exception, exiting...', {
+            files: [
+                new Discord.MessageAttachment(Buffer.from(
+                    `KojimaBot error log\nError: ${e.name} (${e.code})\nError type: ${e.type}\nStack trace:\n${e.stack}`
+                ), `log-${new Date().toUTCString()}.txt`)
+            ]
+        });
+        process.exit(99);
+    })
+}
+
 const pgclient = new pgClient({
     connectionString: process.env.DATABASE_URL,
     ssl: {

@@ -24,6 +24,7 @@ if (process.env.STATUS_WEBHOOK_ID && process.env.STATUS_WEBHOOK_TOKEN) {
     statusWebhook.send("KojimaBot is starting...");
 
     process.on('cleanup', ()=>{
+        statusWebhook.send('KojimaBot exiting...');
         console.log('KojimaBot process exiting...');
     });
 
@@ -115,9 +116,9 @@ client.once('ready', () => {
 
 const sendMessageInGuild = (guild, message, messagejp) => {
     try {
-        console.log(`Sending a message to guild ${guild}:`)
-        console.log('Message(en):',message);
-        console.log('Message(jp):',messagejp);
+        //console.log(`Sending a message to guild ${guild}:`)
+        //console.log('Message(en):',message);
+        //console.log('Message(jp):',messagejp);
         if (guild.jpenabled && guild.destChannel.guild.me.hasPermission('MANAGE_WEBHOOKS')) {
             guild.destChannel.fetchWebhooks().then(webhooks=>{
                 if (webhooks.size < 1) return guild.destChannel.createWebhook('小島秀夫', {avatarURL: 'https://kojimaize.xyz/img/kojimajp.jpg'});
@@ -144,7 +145,7 @@ setInterval(()=>{
             if (guild.destChannel && guild.lastUsername && guild.greetInt && guild.greetedLast && Math.floor(Math.abs(new Date() - guild.greetedLast)/60000) >= guild.greetInt && guild.greetInt > 0) {
                 count++;
                 if (typeof guild.destChannel === 'string') {
-                    console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
+                    //console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
                     client.guilds.fetch(guild.id).then(guildobj=>{
                         let bak = guild.destChannel;
                         guilds[idx].destChannel = guildobj.channels.resolve(guild.destChannel);
@@ -184,7 +185,7 @@ client.on('guildMemberAdd', member => {
 
         if (guild.destChannel) {
             if (typeof guild.destChannel === 'string') {
-                console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
+                //console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
                 client.guilds.fetch(guild.id).then(guildobj=>{
                     guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
                     //guild.destChannel.send(kojimaizer(member.user.username) + ` <@!${member.id}>`).catch(e=>console.log(`Error sending message: ${e}`));
@@ -215,7 +216,7 @@ client.on('guildMemberRemove', member => {
 
         if (guild.destChannel) {
             if (typeof guild.destChannel === 'string') {
-                console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
+                //console.log(`Resolving channel ${guild.destChannel} for guild ${guild.id}`);
                 client.guilds.fetch(guild.id).then(guildobj=>{
                     guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guild.destChannel);
                     //guild.destChannel.send(kojimaizer(member.user.username).replace(/^Hi/, 'Bye') + ` (${member.user.username}#${member.user.discriminator})`).catch(e=>console.log(`Error sending message: ${e}`));
@@ -253,9 +254,9 @@ client.on('message', message => {
             });
             pgclient.query(`INSERT INTO guilds (gid, cid) VALUES ('${message.guild.id}','0');`);
         }
-        if (message.channel.type==='dm') console.log('Got DM');
+        //if (message.channel.type==='dm') console.log('Got DM');
         if (((message.guild && message.member && message.mentions.has(message.guild.me)) || message.channel.type==='dm') && message.content.indexOf('help') > -1 && !message.author.bot) {
-            console.log('Sending help');
+            //console.log('Sending help');
             const prefix = `@HIDEO_KOJIMA`;
             const helpEmbed = new Discord.MessageEmbed()
                 .setColor('#1DA1F2')
@@ -276,11 +277,11 @@ client.on('message', message => {
                     { name: `${prefix} hi`, value: 'Have HIDEO Greet You In Exchange For 1 Credit' },
                     { name: `checkbalance (DMs)`, value: 'See How Many Credits You Have' },
                 );
-            if (message.guild) message.author.send(helpEmbed).then(()=>message.react('📤').catch(()=>console.log("Couldn't react"))).catch(()=>console.log("Couldn't send DM"));
+            if (message.guild) message.author.send(helpEmbed).then(()=>message.react('📤').catch(()=>console.error("Couldn't react"))).catch(()=>console.error("Couldn't send DM"));
             else message.channel.send(helpEmbed);
             return;
         } else if (message.channel.type==='dm' && message.content.indexOf('checkbalance') > -1 && !message.author.bot) {
-            console.log('Sending balance');
+            //console.log('Sending balance');
             pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
                 if (err) throw err;
                 console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);
@@ -292,34 +293,34 @@ client.on('message', message => {
             })
         } else if (message.guild && message.member && message.mentions.has(message.guild.me) && message.member.permissions.has('MANAGE_GUILD', true) && !message.author.bot) {
             if (message.content.indexOf('setchannel') > -1) {
-                console.log('Setting channel');
+                //console.log('Setting channel');
                 let channel = message.mentions.channels.first() || message.channel;
                 let perms = new Discord.Permissions(channel.permissionsFor(message.guild.me).bitfield);
                 if (perms.has('SEND_MESSAGES')) {
-                    console.log(`Set channel for ${guilds[guildObjIdx].id} to ${channel.id}`);
+                    //console.log(`Set channel for ${guilds[guildObjIdx].id} to ${channel.id}`);
                     guilds[guildObjIdx].destChannel = channel;
-                    message.channel.send(`Hi Ad Min\n\nI Set The Channel To ${message.mentions.channels ? '<#'+channel.id+'>' : 'This One'}`).catch(e=>console.log(`Error sending message: ${e}`));
+                    message.channel.send(`Hi Ad Min\n\nI Set The Channel To ${message.mentions.channels ? '<#'+channel.id+'>' : 'This One'}`).catch(e=>console.error(`Error sending message: ${e}`));
                     pgclient.query(`UPDATE guilds SET cid='${channel.id}' WHERE gid='${guilds[guildObjIdx].id}';`);
                 } else {
-                    console.log("Didn't set channel b/c it is readonly")
-                    message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${channel.name} So I Did Not Change The Channel`).catch(e=>console.log(`Error sending message: ${e}`));
+                    //console.log("Didn't set channel b/c it is readonly")
+                    message.author.send(`Hi Ad Min\n\nI Can't Send Messages In #${channel.name} So I Did Not Change The Channel`).catch(e=>console.error(`Error sending message: ${e}`));
                 }
                 return;
             } else if (message.content.indexOf('togglewelcome') > -1) {
                 guilds[guildObjIdx].entermessage = !guilds[guildObjIdx].entermessage;
-                console.log(`${guilds[guildObjIdx].entermessage ? 'Enabled' : 'Disabled'} welcome for ${guilds[guildObjIdx].id}`);
-                message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].entermessage ? 'Now' : 'Not'} Greet People When They Join`).catch(e=>console.log(`Error sending message: ${e}`));
+                //console.log(`${guilds[guildObjIdx].entermessage ? 'Enabled' : 'Disabled'} welcome for ${guilds[guildObjIdx].id}`);
+                message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].entermessage ? 'Now' : 'Not'} Greet People When They Join`).catch(e=>console.error(`Error sending message: ${e}`));
                 pgclient.query(`UPDATE guilds SET entermsg='${guilds[guildObjIdx].entermessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
                 return;
             } else if (message.content.indexOf('togglefarewell') > -1) {
                 guilds[guildObjIdx].leavemessage = !guilds[guildObjIdx].leavemessage;
-                console.log(`${guilds[guildObjIdx].leavemessage ? 'Enabled' : 'Disabled'} farewell for ${guilds[guildObjIdx].id}`);
-                message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`).catch(e=>console.log(`Error sending message: ${e}`));
+                //console.log(`${guilds[guildObjIdx].leavemessage ? 'Enabled' : 'Disabled'} farewell for ${guilds[guildObjIdx].id}`);
+                message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].leavemessage ? 'Now' : 'Not'} Greet People When They Leave`).catch(e=>console.errpr(`Error sending message: ${e}`));
                 pgclient.query(`UPDATE guilds SET leavemsg='${guilds[guildObjIdx].leavemessage}' WHERE gid='${guilds[guildObjIdx].id}';`);
                 return;
             } else if (message.content.indexOf('togglejp') > -1) {
                 guilds[guildObjIdx].jpenabled = !guilds[guildObjIdx].jpenabled;
-                console.log(`${guilds[guildObjIdx].jpenabled ? 'Enabled' : 'Disabled'} japanese mode for ${guilds[guildObjIdx].id}`);
+                //console.log(`${guilds[guildObjIdx].jpenabled ? 'Enabled' : 'Disabled'} japanese mode for ${guilds[guildObjIdx].id}`);
                 message.channel.send(`Hi Ad Min\n\nI Will ${guilds[guildObjIdx].jpenabled ? 'Now' : 'Not'} Greet People In Japanese${guilds[guildObjIdx].jpenabled ? '\nMake Sure To Give Me Manage Webhooks Permissions' : ''}`).catch(e=>console.log(`Error sending message: ${e}`));
                 pgclient.query(`UPDATE guilds SET jpenabled='${guilds[guildObjIdx].jpenabled}' WHERE gid='${guilds[guildObjIdx].id}';`);
                 return;
@@ -327,7 +328,7 @@ client.on('message', message => {
                 let interv = intervalToMin(message.content.split(' ').pop());
                 if (isNaN(interv)) return;
                 guilds[guildObjIdx].greetInt = interv;
-                console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
+                //console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
                 message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${minToInterval(interv)}`).catch(e=>console.log(`Error sending message: ${e}`));
                 pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`);
                 return;
@@ -342,14 +343,14 @@ client.on('message', message => {
             if (message.mentions.has(message.guild.me) && message.content.indexOf('hi') > -1) {
                 pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
                     if (err) throw err;
-                    console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);
+                    //console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);
                     let votecount = 0;
                     if (res.rows.length > 0) {
                         votecount = res.rows[0].count;
                     }
                     if (votecount > 0) {
                         if (typeof guilds[guildObjIdx].destChannel === 'string') {
-                            console.log(`Resolving channel ${guilds[guildObjIdx].destChannel} for guild ${guilds[guildObjIdx].id}`);
+                            //console.log(`Resolving channel ${guilds[guildObjIdx].destChannel} for guild ${guilds[guildObjIdx].id}`);
                             client.guilds.fetch(guilds[guildObjIdx].id).then(guildobj=>{
                                 let bak = guilds[guildObjIdx].destChannel;
                                 guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guilds[guildObjIdx].destChannel);
@@ -358,16 +359,16 @@ client.on('message', message => {
                                     console.log(`Couldn't resolve channel ${guilds[guildObjIdx].destChannel} in ${guilds[guildObjIdx].id}.`);
                                     return;
                                 }
-                                console.log('Saying hi to', message.author.username);
+                                //console.log('Saying hi to', message.author.username);
                                 katakanaifier(message.author.username).then(jp=>{
                                     sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
                                 }).catch(e=>console.error('espeak error', e));
                             }).catch(()=>console.error(`Couldn't fetch guild ${guilds[guildObjIdx].id}, maybe the bot was kicked?`));
                         } else {
-                            console.log('Saying hi to', message.author.username);
+                            //console.log('Saying hi to', message.author.username);
                             katakanaifier(message.author.username).then(jp=>{
                                 sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
-                            }).catch(e=>console.log('espeak error', e));
+                            }).catch(e=>console.error('espeak error', e));
                         }
                         pgclient.query(`UPDATE votes SET count=${votecount-1} WHERE uid='${message.author.id}'`);
                     } else {
@@ -377,7 +378,7 @@ client.on('message', message => {
             }
         
             guilds[guildObjIdx].lastUsername = message.author.username;
-            console.log(guilds[guildObjIdx].lastUsername);
+            //console.log(guilds[guildObjIdx].lastUsername);
         }
     } catch (e) {
         console.error('Exception in message handler:', e);

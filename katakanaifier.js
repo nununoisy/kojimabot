@@ -11,6 +11,10 @@ const converter = { convert: term=>{
 }};
 
 const katakanaifier = term => new Promise((resolve,reject)=>{
+    if (!term) {
+        resolve('');
+        return;
+    }
     console.log('Input:',term);
 
     let oterm = term;

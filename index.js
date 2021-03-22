@@ -55,7 +55,7 @@ if (process.env.STATUS_WEBHOOK_ID && process.env.STATUS_WEBHOOK_TOKEN) {
                 totalMemberCount: guilds.reduce((a,c)=>a+c.memberCount,0),
                 guildCount: guilds.length,
                 guilds
-            })))
+            })), 'servers.json')
         );
     }
 }

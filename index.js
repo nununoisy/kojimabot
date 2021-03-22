@@ -18,6 +18,8 @@ const { intervalToMin, minToInterval } = require('./intervalHelper');
 
 const postgresdate = d => `${d.getUTCFullYear()}-${('00'+(d.getUTCMonth()+1)).slice(-2)}-${('00'+d.getUTCDate()).slice(-2)} ${('00'+d.getUTCHours()).slice(-2)}:${('00'+d.getUTCMinutes()).slice(-2)}:${('00'+d.getUTCSeconds()).slice(-2)}`;
 
+let displayBotGuilds = client => console.log(client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount }))); 
+
 if (process.env.STATUS_WEBHOOK_ID && process.env.STATUS_WEBHOOK_TOKEN) {
     const statusWebhook = new Discord.WebhookClient(process.env.STATUS_WEBHOOK_ID, process.env.STATUS_WEBHOOK_TOKEN);
 
@@ -38,15 +40,24 @@ if (process.env.STATUS_WEBHOOK_ID && process.env.STATUS_WEBHOOK_TOKEN) {
     });
 
     process.on('uncaughtException', e=>{
-        statusWebhook.send('KojimaBot encountered an exception, exiting...', {
-            files: [
-                new Discord.MessageAttachment(Buffer.from(
-                    `KojimaBot error log\nError: ${e.name} (${e.code})\nError type: ${e.type}\nStack trace:\n${e.stack}`
-                ), `log-${new Date().toUTCString()}.txt`)
-            ]
-        });
+        statusWebhook.send('KojimaBot encountered an exception, exiting...',
+            new Discord.MessageAttachment(Buffer.from(
+                `KojimaBot error log\nError: ${e.name} (${e.code})\nError type: ${e.type}\nStack trace:\n${e.stack}`
+            ), `log-${new Date().toUTCString()}.txt`)
+        );
         process.exit(99);
-    })
+    });
+
+    displayBotGuilds = client => {
+        let guilds = client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount, iconURL: g.iconURL({format: 'png', dynamic: true}) }));
+        statusWebhook.send(`Guild membership report: ${guilds.reduce((a,c)=>a+c.memberCount,0)} members in ${guilds.length} guilds`,
+            new Discord.MessageAttachment(Buffer.from(JSON.stringify({
+                totalMemberCount: guilds.reduce((a,c)=>a+c.memberCount,0),
+                guildCount: guilds.length,
+                guilds
+            })))
+        );
+    }
 }
 
 const pgclient = new pgClient({
@@ -110,7 +121,7 @@ dbl.on('posted', postBotStats);
 client.once('ready', () => {
     client.user.setActivity("Hi Sponge Bob");
     console.log('Login success');
-    console.log(client.guilds.cache.map(g=>({ id: g.id, name: g.name, memberCount: g.memberCount })));
+    displayBotGuilds(client);
     postBotStats();
 });
 

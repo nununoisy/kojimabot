@@ -440,11 +440,12 @@ client.on('message', message => {
                                     sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
                                 }).catch(e=>console.error('espeak error', e));
                                 */
+                                guilds[guildObjIdx].destChannel.startTyping();
                                 walkmanizer(songQuery).then(walkmanized=>{
                                     guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png'));
                                 }).catch(e=>{
                                     guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
-                                });
+                                }).finally(()=>guilds[guildObjIdx].destChannel.stopTyping());
                             }).catch(()=>console.error(`Couldn't fetch guild ${guilds[guildObjIdx].id}, maybe the bot was kicked?`));
                         } else {
                             //console.log('Saying hi to', message.author.username);
@@ -453,11 +454,12 @@ client.on('message', message => {
                                 sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
                             }).catch(e=>console.error('espeak error', e));
                             */
+                            guilds[guildObjIdx].destChannel.startTyping();
                             walkmanizer(songQuery).then(walkmanized=>{
                                 guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png'));
                             }).catch(e=>{
                                 guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
-                            });
+                            }).finally(()=>guilds[guildObjIdx].destChannel.stopTyping());;
                         }
                         pgclient.query(`UPDATE votes SET count=${votecount-2} WHERE uid='${message.author.id}'`);
                     } else {

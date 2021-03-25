@@ -442,7 +442,9 @@ client.on('message', message => {
                                 */
                                 guilds[guildObjIdx].destChannel.startTyping();
                                 walkmanizer(songQuery).then(walkmanized=>{
-                                    guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png'));
+                                    guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png')).catch(e=>{
+                                        guilds[guildObjIdx].destChannel.send('Sorry, I Do Not Have Image Permissions');
+                                    });
                                 }).catch(e=>{
                                     guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
                                 }).finally(()=>guilds[guildObjIdx].destChannel.stopTyping());
@@ -456,7 +458,9 @@ client.on('message', message => {
                             */
                             guilds[guildObjIdx].destChannel.startTyping();
                             walkmanizer(songQuery).then(walkmanized=>{
-                                guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png'));
+                                guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png')).catch(e=>{
+                                    guilds[guildObjIdx].destChannel.send('Sorry, I Do Not Have Image Permissions');
+                                });
                             }).catch(e=>{
                                 guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
                             }).finally(()=>guilds[guildObjIdx].destChannel.stopTyping());;

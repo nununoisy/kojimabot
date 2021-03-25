@@ -41,6 +41,7 @@ if (process.env.STATUS_WEBHOOK_ID && process.env.STATUS_WEBHOOK_TOKEN) {
     });
 
     process.on('uncaughtException', e=>{
+        console.error(e);
         statusWebhook.send('KojimaBot encountered an exception, exiting...',
             new Discord.MessageAttachment(Buffer.from(
                 `KojimaBot error log\nError: ${e.name} (${e.code})\nError type: ${e.type}\nStack trace:\n${e.stack}`

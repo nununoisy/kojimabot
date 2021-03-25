@@ -14,6 +14,7 @@ const dbl = new DBL(process.env.DBLTOKEN, client);
 
 const kojimaizer = require('./kojimaizer');
 const katakanaifier = require('./katakanaifier');
+const walkmanizer = require('./walkmanize');
 const { intervalToMin, minToInterval } = require('./intervalHelper');
 
 const postgresdate = d => `${d.getUTCFullYear()}-${('00'+(d.getUTCMonth()+1)).slice(-2)}-${('00'+d.getUTCDate()).slice(-2)} ${('00'+d.getUTCHours()).slice(-2)}:${('00'+d.getUTCMinutes()).slice(-2)}:${('00'+d.getUTCSeconds()).slice(-2)}`;
@@ -69,6 +70,21 @@ const pgclient = new pgClient({
 
 pgclient.connect();
 
+/**
+ * @typedef {Object} GuildInfo
+ * @property {String} id - Guild ID
+ * @property {Discord.GuildChannel} destChannel - Destination channel ID/object
+ * @property {String} lastUsername - Username of last member to send a message
+ * @property {Boolean} entermessage - If join messages are enabled
+ * @property {Boolean} leavemessage - If leave messages are enabled
+ * @property {Number} greetInt - Greeting interval in minutes
+ * @property {Date} greetedLast - Last time a greeting was sent
+ * @property {Boolean} jpenabled - If japanese mode is enabled
+ */
+
+/**
+ * @type {GuildInfo[]}
+ */
 let guilds = [];
 
 const postBotStats = () => {
@@ -76,7 +92,7 @@ const postBotStats = () => {
         let totalMembers = client.guilds.cache.reduce((a,c)=>a+c.memberCount,0);
         let totalGuilds = client.guilds.cache.size;
         console.log(`Bot stats: ${totalMembers} members in ${totalGuilds} guilds`);
-        // dbl handled by module
+        // dbl (top.gg) handled by module
         // discordbotlist.com
         fetch(`https://discordbotlist.com/api/v1/bots/${client.user.id}/stats`, {
             method: 'POST',
@@ -88,7 +104,7 @@ const postBotStats = () => {
                 users: totalMembers,
                 guilds: totalGuilds
             })
-        })
+        });
         // discord.bots.gg
         fetch(`https://discord.bots.gg/api/v1/bots/${client.user.id}/stats`, {
             method: 'POST',
@@ -99,7 +115,7 @@ const postBotStats = () => {
             body: JSON.stringify({
                 guildCount: totalGuilds
             })
-        })
+        });
         // bots.ondiscord.xyz
         fetch(`https://bots.ondiscord.xyz/bot-api/bots/${client.user.id}/guilds`, {
             method: 'POST',
@@ -110,7 +126,7 @@ const postBotStats = () => {
             body: JSON.stringify({
                 guildCount: totalGuilds
             })
-        })
+        });
     } catch (e) {
         console.error('Exception in postBotStats:', e);
     }
@@ -125,6 +141,12 @@ client.once('ready', () => {
     postBotStats();
 });
 
+/**
+ * Send a message to a guild.
+ * @param {GuildInfo} guild - Guild to send messages to.
+ * @param {String} message - Message to send (english) 
+ * @param {String} messagejp - Message to send (japanese)
+ */
 const sendMessageInGuild = (guild, message, messagejp) => {
     try {
         //console.log(`Sending a message to guild ${guild}:`)
@@ -286,6 +308,7 @@ client.on('message', message => {
                     { name: '\u200B', value: '\u200B' },
                     { name: 'Vote Greets', value: 'If You Vote For KojimaBot On [Top.gg](https://top.gg/bot/753757823535677561) Or [DiscordBotList](https://discord.ly/hideokojima) You Will Recieve A Credit.'},
                     { name: `${prefix} hi`, value: 'Have HIDEO Greet You In Exchange For 1 Credit' },
+                    { name: `${prefix} listen \`<songname>\``, value: 'Play A Song On My Sony Walkman In Exchange For 2 Credits'},
                     { name: `checkbalance (DMs)`, value: 'See How Many Credits You Have' },
                 );
             if (message.guild) message.author.send(helpEmbed).then(()=>message.react('📤').catch(()=>console.error("Couldn't react"))).catch(()=>console.error("Couldn't send DM"));
@@ -383,7 +406,61 @@ client.on('message', message => {
                         }
                         pgclient.query(`UPDATE votes SET count=${votecount-1} WHERE uid='${message.author.id}'`);
                     } else {
-                        message.author.send(`You Have No Credits Left\n\nVote On Top.gg https://top.gg/bot/753757823535677561 Or DiscordBotList https://discord.ly/hideokojima To Get More`).catch(()=>console.error("Couldn't send DM"));
+                        message.author.send(`You Do Not Have Enough Credits Left\n\nVote On Top.gg https://top.gg/bot/753757823535677561 Or DiscordBotList https://discord.ly/hideokojima To Get More`).catch(()=>console.error("Couldn't send DM"));
+                    }
+                })
+            } else if (message.mentions.has(message.guild.me) && message.content.indexOf('listen ') > -1) {
+                let didFulfill = false;
+                let pargs = message.content.split('listen ');
+                if (pargs.length < 2) return;
+                let songQuery = pargs.pop();
+                if (!songQuery) return;
+                pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
+                    if (err) throw err;
+                    //console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);
+                    let votecount = 0;
+                    if (res.rows.length > 0) {
+                        votecount = res.rows[0].count;
+                    }
+                    if (votecount > 1) {
+                        if (typeof guilds[guildObjIdx].destChannel === 'string') {
+                            //console.log(`Resolving channel ${guilds[guildObjIdx].destChannel} for guild ${guilds[guildObjIdx].id}`);
+                            client.guilds.fetch(guilds[guildObjIdx].id).then(guildobj=>{
+                                let bak = guilds[guildObjIdx].destChannel;
+                                guilds[guildObjIdx].destChannel = guildobj.channels.resolve(guilds[guildObjIdx].destChannel);
+                                if (!guilds[guildObjIdx].destChannel) {
+                                    guilds[guildObjIdx].destChannel = bak;
+                                    console.log(`Couldn't resolve channel ${guilds[guildObjIdx].destChannel} in ${guilds[guildObjIdx].id}.`);
+                                    return;
+                                }
+                                //console.log('Saying hi to', message.author.username);
+                                /*
+                                katakanaifier(message.author.username).then(jp=>{
+                                    sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
+                                }).catch(e=>console.error('espeak error', e));
+                                */
+                                walkmanizer(songQuery).then(walkmanized=>{
+                                    guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png'));
+                                }).catch(e=>{
+                                    guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
+                                });
+                            }).catch(()=>console.error(`Couldn't fetch guild ${guilds[guildObjIdx].id}, maybe the bot was kicked?`));
+                        } else {
+                            //console.log('Saying hi to', message.author.username);
+                            /*
+                            katakanaifier(message.author.username).then(jp=>{
+                                sendMessageInGuild(guilds[guildObjIdx], kojimaizer(message.author.username), `こんにちは ${jp}`);
+                            }).catch(e=>console.error('espeak error', e));
+                            */
+                            walkmanizer(songQuery).then(walkmanized=>{
+                                guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png'));
+                            }).catch(e=>{
+                                guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
+                            });
+                        }
+                        pgclient.query(`UPDATE votes SET count=${votecount-2} WHERE uid='${message.author.id}'`);
+                    } else {
+                        message.author.send(`You Do Not Have Enough Credits Left\n\nVote On Top.gg https://top.gg/bot/753757823535677561 Or DiscordBotList https://discord.ly/hideokojima To Get More`).catch(()=>console.error("Couldn't send DM"));
                     }
                 })
             }

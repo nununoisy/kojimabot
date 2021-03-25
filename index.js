@@ -364,7 +364,7 @@ client.on('message', message => {
                 if (isNaN(interv)) return;
                 guilds[guildObjIdx].greetInt = interv;
                 //console.log(`Set greet interval for ${guilds[guildObjIdx].id} to ${interv} minutes`);
-                message.channel.send(`Hi Ad Min\n\nI Will Say Hi Every ${minToInterval(interv)}`).catch(e=>console.log(`Error sending message: ${e}`));
+                message.channel.send(`Hi Ad Min\n\nI Will ${interv > 0 ? `Say Hi Every ${minToInterval(interv)}` : 'Not Say Hi Randomly'}`).catch(e=>console.log(`Error sending message: ${e}`));
                 pgclient.query(`UPDATE guilds SET greetinterval=${guilds[guildObjIdx].greetInt} WHERE gid='${guilds[guildObjIdx].id}';`);
                 return;
             }

@@ -1,4 +1,5 @@
 const { spawnSync } = require('child_process');
+const path = require('path');
 const fetch = require('node-fetch');
 const deezerSearch = require('./deezer');
 const spotifySearch = require('./spotify');
@@ -46,11 +47,11 @@ const Walkmanize = async (search) => {
         '-extent', '1000x1200',
         // add song data text
         '-gravity', 'northwest',
-        '-font', 'Roboto',
+        '-font', path.join(__dirname, 'Roboto-Regular.ttf'),
         '-pointsize', '51',
         '-fill', 'white',
         '-draw', `text 67,1017 "${songdata.title}"`,
-        '-font', 'Roboto-Medium',
+        '-font', path.join(__dirname, 'Roboto-Medium.ttf'),
         '-pointsize', '42',
         '-draw', `text 67,1078 "${songdata.artist.toUpperCase()}"`,
         '-fill', '#949494',

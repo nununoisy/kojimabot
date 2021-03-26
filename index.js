@@ -442,7 +442,7 @@ client.on('message', message => {
                                 */
                                 guilds[guildObjIdx].destChannel.startTyping();
                                 walkmanizer(songQuery).then(walkmanized=>{
-                                    guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png')).catch(e=>{
+                                    guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png')).then(()=>didFulfill=true).catch(e=>{
                                         guilds[guildObjIdx].destChannel.send('Sorry, I Do Not Have Image Permissions');
                                     });
                                 }).catch(e=>{
@@ -458,14 +458,14 @@ client.on('message', message => {
                             */
                             guilds[guildObjIdx].destChannel.startTyping();
                             walkmanizer(songQuery).then(walkmanized=>{
-                                guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png')).catch(e=>{
+                                guilds[guildObjIdx].destChannel.send(`Good morning. ${walkmanized.url}`, new Discord.MessageAttachment(walkmanized.finalimg, 'walkman.png')).then(()=>didFulfill=true).catch(e=>{
                                     guilds[guildObjIdx].destChannel.send('Sorry, I Do Not Have Image Permissions');
                                 });
                             }).catch(e=>{
                                 guilds[guildObjIdx].destChannel.send(`Couldn't Find Song, Sorry...\nMake Sure Your Song Is On Spotify Or Deezer`);
                             }).finally(()=>guilds[guildObjIdx].destChannel.stopTyping());;
                         }
-                        pgclient.query(`UPDATE votes SET count=${votecount-2} WHERE uid='${message.author.id}'`);
+                        if (didFulfill) pgclient.query(`UPDATE votes SET count=${votecount-2} WHERE uid='${message.author.id}'`);
                     } else {
                         message.author.send(`You Do Not Have Enough Credits Left\n\nVote On Top.gg https://top.gg/bot/753757823535677561 Or DiscordBotList https://discord.ly/hideokojima To Get More`).catch(()=>console.error("Couldn't send DM"));
                     }

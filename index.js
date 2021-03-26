@@ -375,7 +375,7 @@ client.on('message', message => {
             if (typeof cidtest !== 'string') cidtest = cidtest.id;
             if (message.channel.id !== cidtest) return;
 
-            if (message.mentions.has(message.guild.me) && message.content.indexOf('hi') > -1) {
+            if (message.mentions.has(message.guild.me) && message.content.indexOf('hi') > -1 && message.content.indexOf('listen ') < 0) {
                 pgclient.query(`SELECT * FROM votes WHERE uid='${message.author.id}';`, (err, res)=>{
                     if (err) throw err;
                     //console.log(`Vote row count for ${message.author.id} is ${res.rows.length}`);

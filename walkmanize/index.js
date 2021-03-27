@@ -67,7 +67,8 @@ const Walkmanize = async (search) => {
         'png:-'
     ], {
         cwd: __dirname,
-        input: imgbuf
+        input: imgbuf,
+        maxBuffer: 4 * 1024 * 1024 // max image size is 4 MB
     });
 
     let finalimg = magick.stdout;

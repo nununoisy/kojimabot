@@ -211,6 +211,7 @@ setInterval(()=>{
 client.on('guildMemberAdd', member => {
     try {
         console.log('Guild recieved new member!');
+        if (Date.now() - member.user.createdAt < 1000*60*60*24) return; // if account is less than a day old do not announce (prevents join username abuse)
         let djsguild = member.guild;
         let guildObjIdx = guilds.findIndex(fguild=>fguild.id===djsguild.id);
         if (guildObjIdx === -1 || !guilds[guildObjIdx].entermessage) return;
@@ -242,6 +243,7 @@ client.on('guildMemberAdd', member => {
 client.on('guildMemberRemove', member => {
     try {
         console.log('Guild lost member...');
+        if (Date.now() - member.user.createdAt < 1000*60*60*24) return; // if account is less than a day old do not announce (prevents join username abuse)
         let djsguild = member.guild;
         let guildObjIdx = guilds.findIndex(fguild=>fguild.id===djsguild.id);
         if (guildObjIdx === -1 || !guilds[guildObjIdx].leavemessage) return;

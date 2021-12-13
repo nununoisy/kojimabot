@@ -1,0 +1,41 @@
+{
+  "name": "kojimabot2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf dist/",
+    "copy-files": "copyfiles -u 1 web/public/** dist/web && copyfiles -u 1 katakanaizer/**/*.js dist/katakanaizer && copyfiles -u 1 walkmanizer/**/*.png walkmanizer/**/*.ttf dist/walkmanizer",
+    "build": "npm run clean && tsc && npm run copy-files",
+    "web": "npm run build && node dist/web/index.js",
+    "bot": "npm run build && node dist/bot/index.js",
+    "walkmanizer-test": "npm run build && node dist/walkmanizer/test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@top-gg/sdk": "^3.1.2",
+    "body-parser": "^1.19.0",
+    "compromise": "^13.11.4",
+    "compromise-syllables": "^0.0.6",
+    "discord.js": "^13.3.1",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.6",
+    "pg": "^8.7.1",
+    "spotify-web-api-node": "^5.0.2",
+    "wanakana": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/emscripten": "^1.39.5",
+    "@types/express": "^4.17.13",
+    "@types/node-fetch": "^2.5.12",
+    "@types/pg": "^8.6.1",
+    "@types/spotify-web-api-node": "^5.0.4",
+    "@types/wanakana": "^4.0.3",
+    "copyfiles": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.4.3"
+  }
+}

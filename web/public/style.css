@@ -1,0 +1,300 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    background-color: #15202b;
+    color: #ffffff;
+    font-size: 1em;
+}
+
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#input {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-size: 1em;
+    background-color: #253341;
+    color: #ffffff;
+    border: 1px solid #15202b;
+    border-radius: 30px;
+    padding: 10px 15px;
+    transition: all 300ms ease-in-out;
+}
+
+#input:focus {
+    background-color: #15202b;
+    border: 1px solid #1da1f2;
+    color: #1da1f2;
+}
+
+.info {
+    margin-top: 10px;
+    font-size: 0.75em;
+}
+
+.buttons, .info {
+    display: flex;
+    justify-content: center;
+}
+
+@media only screen and (max-width: 600px) {
+    .buttons {
+        align-items: center;
+        flex-direction: column;
+    }
+    .info {
+        font-size: 0.5rem;
+    }
+}
+
+button, .buttons a {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-size: 1em;
+    background-color: rgba(29, 161, 242, 0);
+    color: #1da1f2;
+    border: 1px solid #1da1f2;
+    border-radius: 30px;
+    padding: 10px 15px;
+    transition: all 300ms ease-in-out;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+}
+
+button:hover, .buttons a:hover {
+    background-color: rgba(29, 161, 242, 0.2);
+}
+
+button:active, .buttons a:active {
+    background-color: rgba(29, 161, 242, 0.5);
+}
+
+button {
+    margin-right: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    button {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+.buttons a .tooltip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #36393f;
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.buttons a .tooltip::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #36393f transparent;
+}
+
+.buttons a:hover .tooltip {
+    display: block;
+}
+
+.command {
+    color: #ffffff;
+}
+
+.command::before, .command::after {
+    content: '\'';
+}
+
+.mention {
+    color: #7289da;
+    background-color: rgba(114, 137, 218, 0.3);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+#capture {
+    background-color: #15202b;
+    padding: 10px;
+    display: flex;
+}
+
+.tweeter {
+    background-color: #15202b;
+    border: 1px solid #505a63;
+    border-radius: 3px;
+    padding: 20px;
+    margin: 30px 0 20px 0;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    width: 30em;
+}
+
+@media only screen and (max-width: 600px) {
+    .tweeter {
+        padding: 10px;
+        margin: 20px 0;
+        width: auto !important;
+        max-width: 90%;
+    }
+}
+
+.image {
+    height: 3em;
+    width: 3em;
+    border-radius: 50%;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+    .image {
+        height: 2rem;
+        width: 2rem;
+        margin-right: 5px;
+    }
+}
+
+.topbar {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    font-size: 1em;
+}
+
+@media only screen and (max-width: 600px) {
+    .text {
+        font-size: 0.75rem;
+    }
+}
+
+#output {
+    word-break: break-all;
+}
+
+.verified {
+    height: 1.25em;
+    width: 1.25em;
+    padding: 0 5px 0 2px;
+}
+
+.verified g path {
+    fill: #ffffff;
+}
+
+@media only screen and (max-width: 600px) {
+    .verified {
+        height: 0.75rem;
+        width: 0.75rem;
+    }
+}
+
+.fname {
+    font-weight: 700;
+}
+
+.username, .separator, #date {
+    color: #8899a6;
+}
+
+.username {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+}
+
+.fname, .verified, .separator, #date {
+    flex-shrink: 0;
+}
+
+.info a, .info p {
+    display: inline-block;
+    color: #8899a6;
+    margin: 0;
+}
+
+.info a:hover {
+    color: #ffffff;
+}
+
+.info .spacer {
+    padding: 0 3px;
+}
+
+.lds-ellipsis {
+    display: none;
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+.lds-ellipsis div {
+    position: absolute;
+    top: 8px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #fff;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+    left: 2px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+    left: 2px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+    left: 14px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(6px, 0);
+    }
+}

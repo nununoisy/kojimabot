@@ -542,7 +542,7 @@ dbh.connect()
     .then(() => client.login(process.env.BOTTOKEN))
     .then(() => {
         setInterval(greetingInterval, 10000);
-        return greetingInterval();
+        return statusWebhook.send('Bot restarted.')
     })
     .catch((e) => {
         console.error('Exception while connecting to database:', e);

@@ -34,8 +34,7 @@ const walkmanize = async (query: string): Promise<IWalkmanizeResult | null> => {
     const image = Buffer.from(imageArrayBuffer);
 
     return new Promise<IWalkmanizeResult | null>((resolve, reject) => {
-        const magick = spawnSync('C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI\\magick.exe', [
-            'convert',
+        const magick = spawnSync('convert', [
             // start with transparent background
             '-background', 'transparent',
             // list[0] will be our album art

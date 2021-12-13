@@ -377,9 +377,9 @@ client.on('interactionCreate', async (interaction) => {
 
                 const credits = await dbh.getUserCreditBalance(interaction.member.user.id);
                 if (credits) {
-                    await interaction.editReply(`Hi ${interaction.member.user.username}\n\nYou Have ${credits} Credit${credits === 1 ? '' : 's'} Remaining.`);
+                    await interaction.editReply(`Hi ${await kojimaize(interaction.member.user.username)}\n\nYou Have ${credits} Credit${credits === 1 ? '' : 's'} Remaining.`);
                 } else {
-                    await interaction.editReply(`Hi ${interaction.member.user.username}\n\nYou Have No Credits Remaining.`);
+                    await interaction.editReply(`Hi ${await kojimaize(interaction.member.user.username)}\n\nYou Have No Credits Remaining.`);
                 }
             } else if (interaction.command.name === "getcredits") {
                 await interaction.deferReply({ ephemeral: true });

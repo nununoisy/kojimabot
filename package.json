@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf dist/",
-    "copy-files": "copyfiles -u 1 web/public/** dist/web && copyfiles -u 1 katakanaizer/**/*.js dist/katakanaizer && copyfiles -u 1 walkmanizer/**/*.png walkmanizer/**/*.ttf dist/walkmanizer",
+    "copy-files": "copyfiles -u 1 web/**/*.html web/**/*.css web/**/*.js web/**/*.jpg web/**/*.svg dist/web && copyfiles -u 1 katakanaizer/**/*.js dist/katakanaizer && copyfiles -u 1 walkmanizer/**/*.png walkmanizer/**/*.ttf dist/walkmanizer",
     "build": "npm run clean && tsc && npm run copy-files",
     "web": "npm run build && node dist/web/index.js",
     "bot": "npm run build && node dist/bot/index.js",

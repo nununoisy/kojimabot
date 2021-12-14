@@ -130,10 +130,10 @@ const greetingInterval = async () => {
     try {
         const now = new Date();
         let greetingCount = 0;
-        const guilds = await client.guilds.fetch();
-        console.log(`Checking ${guilds.size} guilds for pending greetings...`);
+        await client.guilds.fetch();
+        console.log(`Checking ${client.guilds.cache.size} guilds for pending greetings...`);
 
-        await Promise.allSettled(guilds.map(async (o2guild) => {
+        await Promise.allSettled(client.guilds.cache.map(async (o2guild) => {
             console.log(`Checking guild ${o2guild.name}...`);
             const guildInfo = await dbh.getGuildInfo(o2guild.id);
             if (!guildInfo || !guildInfo.cid || !guildInfo.lastUsername || guildInfo.greetInterval <= 0)

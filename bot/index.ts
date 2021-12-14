@@ -9,6 +9,7 @@ import durationFormat from "../helpers/durationFormat";
 import commands from "../helpers/commands";
 import fetch from "node-fetch";
 import { Api as TopggApi } from "@top-gg/sdk";
+import limit from "p-limit";
 
 const client = new Discord.Client({
     allowedMentions: {
@@ -126,6 +127,8 @@ const sendMessageInGuild = async (guild: Discord.Guild, message: string, message
     }
 }
 
+const greetingLimit = limit(20);
+
 const greetingInterval = async () => {
     try {
         const now = new Date();
@@ -133,30 +136,34 @@ const greetingInterval = async () => {
         await client.guilds.fetch();
         console.log(`Checking ${client.guilds.cache.size} guilds for pending greetings...`);
 
-        await Promise.allSettled(client.guilds.cache.map(async (o2guild) => {
-            console.log(`Checking guild ${o2guild.name}...`);
-            const guildInfo = await dbh.getGuildInfo(o2guild.id);
-            if (!guildInfo || !guildInfo.cid || guildInfo.cid === "0" || !guildInfo.lastUsername || guildInfo.greetInterval <= 0)
-                return;
+        await Promise.allSettled(
+            client.guilds.cache.map(async (cacheGuild) => greetingLimit(
+                async () => {
+                    console.log(`Checking guild ${cacheGuild.name}...`);
+                    const guildInfo = await dbh.getGuildInfo(cacheGuild.id);
+                    if (!guildInfo || !guildInfo.cid || guildInfo.cid === "0" || !guildInfo.lastUsername || guildInfo.greetInterval <= 0)
+                        return;
 
-            const timeFromLastGreet = (now.getTime() - guildInfo.greetedLast.getTime()) / (1000 * 60);
-            console.log(`Time since last greeting: ${timeFromLastGreet} minutes`);
-            if (timeFromLastGreet < guildInfo.greetInterval)
-                return;
+                    const timeFromLastGreet = (now.getTime() - guildInfo.greetedLast.getTime()) / (1000 * 60);
+                    console.log(`Time since last greeting: ${timeFromLastGreet} minutes`);
+                    if (timeFromLastGreet < guildInfo.greetInterval)
+                        return;
 
-            greetingCount++;
-            const message = `Hi ${await kojimaize(guildInfo.lastUsername)}`;
-            const messagejp = `こんにちは ${await katakanaize(guildInfo.lastUsername)}`;
+                    greetingCount++;
+                    const message = `Hi ${await kojimaize(guildInfo.lastUsername)}`;
+                    const messagejp = `こんにちは ${await katakanaize(guildInfo.lastUsername)}`;
 
-            const guild = await o2guild.fetch();
+                    const guild = await cacheGuild.fetch();
 
-            await sendMessageInGuild(guild, message, messagejp);
+                    await sendMessageInGuild(guild, message, messagejp);
 
-            guildInfo.greetedLast = now;
-            await dbh.updateGuild(guildInfo);
+                    guildInfo.greetedLast = now;
+                    await dbh.updateGuild(guildInfo);
 
-            console.log(`Sent greeting in guild ${guild.name}.`);
-        }));
+                    console.log(`Sent greeting in guild ${guild.name}.`);
+                }
+            ))
+        );
     } catch (e) {
         await statusWebhook.send(`Exception in greeting interval: ${e}`);
         console.error('Exception in greeting interval:', e);

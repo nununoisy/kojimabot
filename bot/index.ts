@@ -136,7 +136,7 @@ const greetingInterval = async () => {
         await Promise.allSettled(client.guilds.cache.map(async (o2guild) => {
             console.log(`Checking guild ${o2guild.name}...`);
             const guildInfo = await dbh.getGuildInfo(o2guild.id);
-            if (!guildInfo || !guildInfo.cid || !guildInfo.lastUsername || guildInfo.greetInterval <= 0)
+            if (!guildInfo || !guildInfo.cid || guildInfo.cid === "0" || !guildInfo.lastUsername || guildInfo.greetInterval <= 0)
                 return;
 
             const timeFromLastGreet = (now.getTime() - guildInfo.greetedLast.getTime()) / (1000 * 60);

@@ -218,10 +218,13 @@ client.on('messageCreate', async (message) => {
         if (!guildInfo)
             return;
 
+        if (message.channelId !== guildInfo.cid)
+            return;
+
         guildInfo.lastUsername = message.author.username;
         await dbh.updateGuild(guildInfo);
 
-        if (message.channelId === guildInfo.cid && message.mentions.users.find((u) => u.id === client.user?.id)) {
+        if (message.mentions.users.find((u) => u.id === client.user?.id)) {
             const commandMessage = await message.reply(`Commands Are Now Invoked Using Slash Commands. For Example: \`/greet\``);
             setTimeout(() => commandMessage.delete(), 10000);
         }

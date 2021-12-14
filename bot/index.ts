@@ -81,7 +81,15 @@ const postBotStats = async () => {
     }
     await Promise.all(requests);
 
-    await statusWebhook.send(`Bot stats:\nMembers: ${totalMembers}\nGuilds: ${totalGuilds}`);
+    const topGuilds = client.guilds.cache.sort((a, b) => b.memberCount - a.memberCount);
+
+    let statusMessage = `Bot stats:\nMembers: ${totalMembers}\nGuilds: ${totalGuilds}\nTop guilds:\n`;
+    for (let i = 0; i < Math.min(totalGuilds, 10); i++) {
+        const topGuild = topGuilds.at(i);
+        statusMessage += `\n  ${i + 1}) ${topGuild?.name} :: ${topGuild?.memberCount} members\n`;
+    }
+
+    await statusWebhook.send(statusMessage);
 }
 
 client.on('ready', async () => {

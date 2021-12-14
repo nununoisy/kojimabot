@@ -127,7 +127,7 @@ const sendMessageInGuild = async (guild: Discord.Guild, message: string, message
     }
 }
 
-const greetingLimit = limit(20);
+const greetingLimit = limit(150);
 
 const greetingInterval = async () => {
     try {

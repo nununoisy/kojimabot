@@ -57,6 +57,17 @@ const commands: ApplicationCommandData[] = [
         }]
     },
     {
+        name: 'repeatgreetings',
+        description: 'Change Whether I Will Greet Again If Nobody Has Spoken Since My Last Greeting',
+        type: 'CHAT_INPUT',
+        options: [{
+            name: 'enabled',
+            description: 'Whether I Will Greet Again If Nobody Has Spoken Since My Last Greeting',
+            type: 'BOOLEAN',
+            required: true
+        }]
+    },
+    {
         name: 'checkbalance',
         description: 'Check Your Credit Balance For Fun Commands',
         type: 'CHAT_INPUT',

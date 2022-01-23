@@ -166,6 +166,8 @@ const greetingInterval = async () => {
                     await sendMessageInGuild(guild, message, messagejp);
 
                     guildInfo.greetedLast = now;
+                    if (!guildInfo.repeatGreet)
+                        guildInfo.lastUsername = null;
                     await dbh.updateGuild(guildInfo);
 
                     console.log(`Sent greeting in guild ${guild.name}.`);
@@ -370,7 +372,7 @@ client.on('interactionCreate', async (interaction) => {
                     await interaction.editReply(`Hi Ad Min\n\nI Will Now Say Farewell To Leaving Members.`);
                 else
                     await interaction.editReply(`Hi Ad Min\n\nI Will No Longer Say Farewell To Leaving Members.`);
-            } else if (interaction.command.name === "japanesemode") {
+            } else if (interaction.command.name === "repeatgreetings") {
                 if (!canMemberInvokeAdminCommands(interaction.member)) {
                     await interaction.reply({
                         content: "Sorry, You Don't Have Permission To Use This Command.",
@@ -379,6 +381,31 @@ client.on('interactionCreate', async (interaction) => {
                     return;
                 }
                 
+                await interaction.deferReply({ephemeral: false});
+
+                const guildInfoE = await dbh.getGuildInfo(interaction.guildId);
+                if (!guildInfoE) {
+                    await dbh.addNewGuild(interaction.guildId);
+                }
+                const guildInfo = guildInfoE || await dbh.getGuildInfo(interaction.guildId);
+                if (guildInfo) {
+                    guildInfo.repeatGreet = interaction.options.getBoolean('enabled') ?? guildInfo.repeatGreet;
+                    await dbh.updateGuild(guildInfo);
+                }
+
+                if (guildInfo?.repeatGreet)
+                    await interaction.editReply(`Hi Ad Min\n\nI Will Now Greet Again If Nobody Has Spoken Since My Last Greeting.`);
+                else
+                    await interaction.editReply(`Hi Ad Min\n\nI Will No Longer Greet Again If Nobody Has Spoken Since My Last Greeting.`);
+            } else if (interaction.command.name === "japanesemode") {
+                if (!canMemberInvokeAdminCommands(interaction.member)) {
+                    await interaction.reply({
+                        content: "Sorry, You Don't Have Permission To Use This Command.",
+                        ephemeral: true
+                    });
+                    return;
+                }
+
                 await interaction.deferReply({ephemeral: false});
 
                 const guildInfoE = await dbh.getGuildInfo(interaction.guildId);

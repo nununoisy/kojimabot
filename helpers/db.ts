@@ -21,7 +21,8 @@ export interface GuildInfo {
     greetedLast: Date, // Last greeting time
     jpEnabled: boolean, // Japanese mode enabled
     destChannel?: TextChannel, // Destination channel object
-    lastUsername?: string // Last username who spoke in the channel
+    lastUsername?: string | null, // Last username who spoke in the channel,
+    repeatGreet: boolean // Repeat greeting if no new users have spoken since the last greeting
 }
 
 export default class DBHelper {
@@ -60,18 +61,29 @@ export default class DBHelper {
     async prepareDatabase() {
         await this.pgClient.query(...q`
         CREATE TABLE IF NOT EXISTS guilds (
-            gid varchar(20) NOT NULL,
+            gid varchar(20) PRIMARY KEY NOT NULL,
             cid varchar(20) NULL,
             entermsg boolean DEFAULT false NULL,
             leavemsg boolean DEFAULT false NULL,
             greetinterval integer DEFAULT 15 NULL,
             greetedlast timestamp without time zone DEFAULT NOW() NULL,
-            jpenabled boolean DEFAULT false NULL
+            jpenabled boolean DEFAULT false NULL,
+            repeatgreet boolean DEFAULT true NULL
         );
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS gid varchar(20) PRIMARY KEY NOT NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS cid varchar(20) NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS entermsg boolean DEFAULT false NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS leavemsg boolean DEFAULT false NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS greetinterval integer DEFAULT 15 NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS greetedlast timestamp without time zone DEFAULT NOW() NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS jpenabled boolean DEFAULT false NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS repeatgreet boolean DEFAULT true NULL;
         CREATE TABLE IF NOT EXISTS votes (
             uid varchar(20) PRIMARY KEY NOT NULL,
             count integer DEFAULT 0 NOT NULL
         );
+        ALTER TABLE votes ADD COLUMN IF NOT EXISTS uid varchar(20) PRIMARY KEY NOT NULL;
+        ALTER TABLE votes ADD COLUMN IF NOT EXISTS count integer DEFAULT 0 NOT NULL;
         `);
     }
 
@@ -99,11 +111,14 @@ export default class DBHelper {
             leavemsg = ${guildInfo.leaveMessage},
             greetinterval = ${guildInfo.greetInterval},
             greetedlast = ${guildInfo.greetedLast},
-            jpenabled = ${guildInfo.jpEnabled}
+            jpenabled = ${guildInfo.jpEnabled},
+            repeatgreet = ${guildInfo.repeatGreet}
         WHERE gid = ${guildInfo.gid};
         `);
         if (guildInfo.lastUsername) {
             this.lastUsernames.set(guildInfo.gid, guildInfo.lastUsername);
+        } else {
+            this.lastUsernames.delete(guildInfo.gid);
         }
     }
 
@@ -128,6 +143,7 @@ export default class DBHelper {
             greetInterval: row.greetinterval,
             greetedLast: row.greetedlast,
             jpEnabled: row.jpenabled,
+            repeatGreet: row.repeatgreet,
             lastUsername
         };
     }

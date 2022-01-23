@@ -82,7 +82,6 @@ export default class DBHelper {
             uid varchar(20) PRIMARY KEY NOT NULL,
             count integer DEFAULT 0 NOT NULL
         );
-        ALTER TABLE votes ADD COLUMN IF NOT EXISTS uid varchar(20) PRIMARY KEY NOT NULL;
         ALTER TABLE votes ADD COLUMN IF NOT EXISTS count integer DEFAULT 0 NOT NULL;
         `);
     }

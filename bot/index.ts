@@ -337,7 +337,7 @@ client.on('interactionCreate', async (interaction) => {
                 }
                 const guildInfo = guildInfoE || await dbh.getGuildInfo(interaction.guildId);
                 if (guildInfo) {
-                    guildInfo.enterMessage = interaction.options.getBoolean('enabled') || guildInfo.enterMessage;
+                    guildInfo.enterMessage = interaction.options.getBoolean('enabled') ?? guildInfo.enterMessage;
                     await dbh.updateGuild(guildInfo);
                 }
 
@@ -362,7 +362,7 @@ client.on('interactionCreate', async (interaction) => {
                 }
                 const guildInfo = guildInfoE || await dbh.getGuildInfo(interaction.guildId);
                 if (guildInfo) {
-                    guildInfo.leaveMessage = interaction.options.getBoolean('enabled') || guildInfo.leaveMessage;
+                    guildInfo.leaveMessage = interaction.options.getBoolean('enabled') ?? guildInfo.leaveMessage;
                     await dbh.updateGuild(guildInfo);
                 }
 
@@ -387,7 +387,7 @@ client.on('interactionCreate', async (interaction) => {
                 }
                 const guildInfo = guildInfoE || await dbh.getGuildInfo(interaction.guildId);
                 if (guildInfo) {
-                    guildInfo.jpEnabled = interaction.options.getBoolean('enabled') || guildInfo.jpEnabled;
+                    guildInfo.jpEnabled = interaction.options.getBoolean('enabled') ?? guildInfo.jpEnabled;
                     await dbh.updateGuild(guildInfo);
                 }
 

@@ -4,7 +4,7 @@
 
 [Hi Sponge Bob](https://kojimaize.xyz)
 
-[Invite me to your server](https://discord.com/api/oauth2/authorize?client_id=919446344307982387&permissions=139653925952&scope=bot%20applications.commands)
+[Invite me to your server](https://discord.com/api/oauth2/authorize?client_id=753757823535677561&permissions=139653925952&scope=bot%20applications.commands)
 
 KojimaBot is a fun bot that emulates the style of a fake tweet from Japanese video game designer Hideo Kojima. It uses a state-of-the-art natural language processing algorithm to process a username and split it in half so that the same awkward word split and capitalization can be replicated with any user in your server. It also has a Japanese mode that will greet users in Japanese using a specialized phonetic transcription system.
 

@@ -61,7 +61,7 @@ export default class DBHelper {
     async prepareDatabase() {
         await this.pgClient.query(...q`
         CREATE TABLE IF NOT EXISTS guilds (
-            gid varchar(20) PRIMARY KEY NOT NULL,
+            gid varchar(20) NOT NULL,
             cid varchar(20) NULL,
             entermsg boolean DEFAULT false NULL,
             leavemsg boolean DEFAULT false NULL,
@@ -70,7 +70,7 @@ export default class DBHelper {
             jpenabled boolean DEFAULT false NULL,
             repeatgreet boolean DEFAULT true NULL
         );
-        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS gid varchar(20) PRIMARY KEY NOT NULL;
+        ALTER TABLE guilds ADD COLUMN IF NOT EXISTS gid varchar(20) NOT NULL;
         ALTER TABLE guilds ADD COLUMN IF NOT EXISTS cid varchar(20) NULL;
         ALTER TABLE guilds ADD COLUMN IF NOT EXISTS entermsg boolean DEFAULT false NULL;
         ALTER TABLE guilds ADD COLUMN IF NOT EXISTS leavemsg boolean DEFAULT false NULL;

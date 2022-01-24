@@ -9,7 +9,8 @@
     "build": "npm run clean && tsc && npm run copy-files",
     "web": "npm run build && node dist/web/index.js",
     "bot": "npm run build && node dist/bot/index.js",
-    "walkmanizer-test": "npm run build && node dist/walkmanizer/test.js"
+    "walkmanizer-test": "ts-node walkmanizer/test.ts",
+    "interactive-test": "ts-node helpers/interactiveTest.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,10 +22,11 @@
     "compromise-syllables": "^0.0.6",
     "discord.js": "^13.3.1",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "p-limit": "^3.1.0",
     "pg": "^8.7.1",
     "spotify-web-api-node": "^5.0.2",
+    "stringz": "^2.1.0",
     "wanakana": "^4.0.2"
   },
   "devDependencies": {
@@ -37,6 +39,7 @@
     "@types/wanakana": "^4.0.3",
     "copyfiles": "^2.4.1",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.4.0",
     "typescript": "^4.4.3"
   },
   "engines": {

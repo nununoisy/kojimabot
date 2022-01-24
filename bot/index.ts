@@ -303,7 +303,7 @@ client.on('interactionCreate', async (interaction) => {
                 await interaction.deferReply({ ephemeral: false });
 
                 const interval = interaction.options.getInteger('interval');
-                if (!interval || interval < 0) {
+                if ((!interval && interval !== 0) || interval < 0) {
                     await interaction.editReply("Hi Ad Min\n\nSorry, I Could Not Set The Interval. Make Sure The Interval Is Positive.");
                     return;
                 }

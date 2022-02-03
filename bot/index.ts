@@ -451,11 +451,11 @@ client.on('interactionCreate', async (interaction) => {
                     .addComponents(
                         new Discord.MessageButton()
                             .setLabel('Vote on Top.gg')
-                            .setURL('https://top.gg/bot/739058985598261760')
+                            .setURL('https://top.gg/bot/753757823535677561')
                             .setStyle('LINK'),
                         new Discord.MessageButton()
                             .setLabel('Vote on Discord Bot List')
-                            .setURL('https://discordbotlist.com/bots/739058985598261760')
+                            .setURL('https://discordbotlist.com/bots/753757823535677561')
                             .setStyle('LINK')
                     );
 

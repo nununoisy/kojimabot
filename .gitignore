@@ -2,3 +2,5 @@ node_modules/
 dist/
 final.png
 .idea/
+dev/production.env
+dev/development.env

@@ -42,6 +42,9 @@ const walkmanize = async (query: string): Promise<IWalkmanizeResult | null> => {
             maxBuffer: 1024 * 1024 * 10
         });
 
+        console.log('CWD:', __dirname);
+        console.log('Magick stderr:', magick.stderr.toString('utf-8'));
+
         resolve({
             image: magick.stdout,
             source,

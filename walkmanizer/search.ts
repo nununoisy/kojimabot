@@ -6,7 +6,7 @@ const spotifyApi = new SpotifyWebApi({
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET
 });
 
-interface IWalkmanizerSearchResult {
+export interface IWalkmanizeSearchResult {
     title: string;
     album: string;
     artist: string;
@@ -14,6 +14,14 @@ interface IWalkmanizerSearchResult {
     link?: string;
 }
 
+/**
+ * Guard method to ensure that the Spotify API token is valid
+ * before making a request.
+ *
+ * Verifies that the current OAuth token is valid, and initiates
+ * a new credential grant if it isn't.
+ * @async
+ */
 const spotifyValidateToken = async () => {
     if (!spotifyApi.getAccessToken()) {
         const grantData = await spotifyApi.clientCredentialsGrant();
@@ -23,7 +31,13 @@ const spotifyValidateToken = async () => {
     }
 }
 
-export const SpotifySearch = async (query: string): Promise<IWalkmanizerSearchResult | null> => {
+/**
+ * Search for a song on Spotify.
+ * @async
+ * @param query The query to search for.
+ * @returns {Promise<IWalkmanizeSearchResult | null>} A promise that resolves to the search result.
+ */
+export const SpotifySearch = async (query: string): Promise<IWalkmanizeSearchResult | null> => {
     await spotifyValidateToken();
     const searchResults = await spotifyApi.searchTracks(query, { limit: 1 });
     if (!searchResults.body.tracks || searchResults.body.tracks.items.length === 0) {
@@ -39,7 +53,13 @@ export const SpotifySearch = async (query: string): Promise<IWalkmanizerSearchRe
     };
 }
 
-export const SpotifyAutocomplete = async (query: string): Promise<IWalkmanizerSearchResult[]> => {
+/**
+ * Search for multiple songs on Spotify, for Discord interaction autocomplete.
+ * @async
+ * @param query The query to search for.
+ * @returns {Promise<IWalkmanizeSearchResult[]>} A promise that resolves to the search results.
+ */
+export const SpotifyAutocomplete = async (query: string): Promise<IWalkmanizeSearchResult[]> => {
     await spotifyValidateToken();
     const searchResults = await spotifyApi.searchTracks(query, { limit: 10 });
     if (!searchResults.body.tracks || searchResults.body.tracks.items.length === 0) {
@@ -101,7 +121,13 @@ interface IDeezerResponse {
     next?: string;
 }
 
-export const DeezerSearch = async (query: string): Promise<IWalkmanizerSearchResult | null> => {
+/**
+ * Search for a song on Deezer.
+ * @async
+ * @param query The query to search for.
+ * @returns {Promise<IWalkmanizeSearchResult | null>} A promise that resolves to the search result.
+ */
+export const DeezerSearch = async (query: string): Promise<IWalkmanizeSearchResult | null> => {
     const deezerResponse = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=1`, {
         headers: {
             'Content-Type': 'application/json',

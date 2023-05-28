@@ -1,6 +1,16 @@
 import { Client } from 'pg';
 import type { Snowflake, TextChannel } from 'discord.js';
 
+/**
+ * Template tagging for SQL queries. Handles parameterizing queries
+ * and removes excess whitespace from the query to make it easier to
+ * read in code.
+ *
+ * Example: q`SELECT * FROM users WHERE id = ${id}` ->
+ *          ['SELECT * FROM users WHERE id = $1', id]
+ * @param parts
+ * @param values
+ */
 const q = (parts: TemplateStringsArray, ...values: any[]): [string, any[]] => {
     let query = '';
     for (let i = 0; i < parts.length; ++i) {
@@ -34,14 +44,13 @@ export default class DBHelper {
      */
     constructor () {
         const connectionString = process.env.DATABASE_URL;
+        const sslConfig = process.env.DISABLE_PG_SSL ? undefined : { rejectUnauthorized: false };
 
         this.lastUsernames = new Map<Snowflake, string>();
 
         this.pgClient = new Client({
             connectionString,
-            ssl: {
-                rejectUnauthorized: false
-            }
+            ssl: sslConfig
         });
     }
 
@@ -151,7 +160,10 @@ export default class DBHelper {
      * Get credit balance for a user.
      * @param uid User ID
      */
-    async getUserCreditBalance(uid: Snowflake) {
+    async getUserCreditBalance(uid: Snowflake): Promise<number> {
+        if (process.env.IS_DEV)
+            return 1000;
+
         const result = await this.pgClient.query(...q`
         SELECT count FROM votes
         WHERE uid = ${uid};

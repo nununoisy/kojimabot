@@ -31,18 +31,18 @@ const updateTweet = () => {
         uname.innerHTML = '@HIDEO_KOJIMA_EN';
     }
     if (input.value === '') {
-        output.innerHTML = jp ? "こんにちは セプンチャ ボブ" : "Hi Sponge Bob";
+        output.innerText = jp ? "こんにちは セプンチャ ボブ" : "Hi Sponge Bob";
         return;
     }
     spinner.style.display = 'inline-block';
-    output.innerHTML = '';
+    output.innerText = '';
     fetch(jp ? '/katakanaize' : '/kojimaize', {
         method: 'POST',
         body: input.value,
         signal: controller.signal
     }).then(r=>r.text()).then(response=>{
         spinner.style.display = 'none';
-        output.innerHTML = response;
+        output.innerText = response;
     }).catch(err=>console.log(err));
 }
 
@@ -62,11 +62,11 @@ img.addEventListener('click', ()=>{
 input.addEventListener('input', e=>{
     window.location.hash = encodeURI((jp ? 'jp:' : '') + e.target.value);
     if (e.target.value === '') {
-        output.innerHTML = jp ? "こんにちは セプンチャ ボブ" : "Hi Sponge Bob";
+        output.innerText = jp ? "こんにちは セプンチャ ボブ" : "Hi Sponge Bob";
         return;
     }
     spinner.style.display = 'inline-block';
-    output.innerHTML = '';
+    output.innerText = '';
     updateTweet();
 });
 
@@ -78,7 +78,8 @@ savebtn.addEventListener('click', ()=>{
     });
     html2canvas(document.querySelector("#capture"), {
         allowTaint: true,
-        backgroundColor: '#15202b'
+        backgroundColor: '#15202b',
+        scale: window.devicePixelRatio * 4
     }).then(canvas => {
         canvas.toBlob(blob=>{
             saveAs(blob, 'kojima.png');

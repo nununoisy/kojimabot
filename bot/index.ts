@@ -15,7 +15,7 @@ const client = new Discord.Client({
     allowedMentions: {
         parse: ['users']
     },
-    intents: ['GUILDS','GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS', 'DIRECT_MESSAGES']
+    intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS', 'DIRECT_MESSAGES']
 });
 
 const dbh = new DBHelper();
@@ -28,6 +28,7 @@ if (process.env.DBLTOKEN) {
 
 /**
  * Post current bot status to the status webhook and to botlist APIs.
+ * @async
  */
 const postBotStats = async () => {
     await client.guilds.fetch();
@@ -96,8 +97,14 @@ client.on('ready', async () => {
     client.user?.setActivity("Hi Sponge Bob");
     console.log(`Logged in as ${client.user?.tag}!`);
     await postBotStats();
-    const devGuild = await client.guilds.fetch('753760888539840573');
-    await devGuild.commands.set(commands);
+    if (process.env.DEV_GUILD) {
+        const devGuild = await client.guilds.fetch(process.env.DEV_GUILD);
+        await devGuild.commands.set(commands);
+
+        client.guilds.cache.filter(guild => guild.id !== process.env.DEV_GUILD).forEach(guild => {
+            guild.leave();
+        });
+    }
     await client.application?.commands.set(commands);
 });
 
@@ -135,8 +142,13 @@ const sendMessageInGuild = async (guild: Discord.Guild, message: string, message
     }
 }
 
+// Limit for concurrent greeting messages to avoid rate limiting/database pressure
 const greetingLimit = limit(150);
 
+/**
+ * Interval method to handle sending greeting messages.
+ * @async
+ */
 const greetingInterval = async () => {
     try {
         const now = new Date();
@@ -149,7 +161,8 @@ const greetingInterval = async () => {
                 async () => {
                     console.log(`Checking guild ${cacheGuild.name}...`);
                     const guildInfo = await dbh.getGuildInfo(cacheGuild.id);
-                    if (!guildInfo || !guildInfo.cid || guildInfo.cid === "0" || !guildInfo.lastUsername || guildInfo.greetInterval <= 0)
+                    if (!guildInfo || !guildInfo.cid || guildInfo.cid === "0" ||
+                            !guildInfo.lastUsername || guildInfo.greetInterval <= 0)
                         return;
 
                     const timeFromLastGreet = (now.getTime() - guildInfo.greetedLast.getTime()) / (1000 * 60);
@@ -253,7 +266,8 @@ const canMemberInvokeAdminCommands = (member: Discord.GuildMember): boolean => {
 
 client.on('interactionCreate', async (interaction) => {
     try {
-        if (!interaction || !interaction.guildId || !interaction.user.id || !interaction.user.username || !(interaction.member instanceof Discord.GuildMember))
+        if (!interaction || !interaction.guildId || !interaction.user.id || !interaction.user.username ||
+                !(interaction.member instanceof Discord.GuildMember))
             return;
 
         if (interaction.isCommand() && interaction.command != null) {

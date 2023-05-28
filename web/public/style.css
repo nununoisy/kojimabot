@@ -1,5 +1,29 @@
+@font-face {
+    font-family: TwitterChirp;
+    src: url("fonts/Chirp-Regular.woff2") format("woff2"), url("fonts/Chirp-Regular.woff") format("woff");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: TwitterChirp;
+    src: url("fonts/Chirp-Medium.woff2") format("woff2"), url("fonts/Chirp-Medium.woff") format("woff");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: TwitterChirp;
+    src: url("fonts/Chirp-Bold.woff2") format("woff2"), url("fonts/Chirp-Bold.woff") format("woff");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: TwitterChirp;
+    src: url("fonts/Chirp-Heavy.woff2") format("woff2"), url("fonts/Chirp-Heavy.woff") format("woff");
+    font-weight: 800;
+}
+
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-family: "TwitterChirp", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
     background-color: #15202b;
     color: #ffffff;
     font-size: 1em;
@@ -19,7 +43,7 @@ body {
 }
 
 #input {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-family: "TwitterChirp", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
     font-size: 1em;
     background-color: #253341;
     color: #ffffff;
@@ -56,7 +80,7 @@ body {
 }
 
 button, .buttons a {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-family: "TwitterChirp", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
     font-size: 1em;
     background-color: rgba(29, 161, 242, 0);
     color: #1da1f2;
@@ -176,17 +200,20 @@ button {
     display: flex;
     justify-content: left;
     align-items: center;
+    line-height: 20px;
+    height: 22px;
+    margin-bottom: 2px;
 }
 
 .text {
     display: flex;
     flex-direction: column;
-    font-size: 1em;
+    font-size: 15px;
 }
 
 @media only screen and (max-width: 600px) {
     .text {
-        font-size: 0.75rem;
+        font-size: 10px;
     }
 }
 
@@ -194,18 +221,27 @@ button {
     word-break: break-all;
 }
 
-.verified {
+.verified-icon {
     height: 1.25em;
     width: 1.25em;
-    padding: 0 5px 0 2px;
+    padding: 0 0 0 2px;
 }
 
-.verified g path {
-    fill: #ffffff;
+.affiliate-icon {
+    height: 1.0625em;
+    width: 1.0625em;
+    margin: 0 2px 0 2px;
+    border-radius: 2px;
+    overflow: hidden;
+    user-select: none;
+}
+
+.verified-icon g path {
+    fill: #1d9bf0;
 }
 
 @media only screen and (max-width: 600px) {
-    .verified {
+    .verified-icon, .affiliate-icon {
         height: 0.75rem;
         width: 0.75rem;
     }
@@ -223,9 +259,11 @@ button {
     overflow: hidden;
     text-overflow: ellipsis;
     flex-shrink: 1;
+    margin-left: 4px;
+    font-size: 15px;
 }
 
-.fname, .verified, .separator, #date {
+.fname, .verified-icon, .affiliate-icon, .separator, #date {
     flex-shrink: 0;
 }
 

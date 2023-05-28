@@ -5,8 +5,7 @@
     "sourceMap": true,
     "outDir": "dist/",
     "esModuleInterop": true,
-    "strict": true,
-    "moduleResolution": "Node16"
+    "strict": true
   },
   "exclude": [
     "node_modules"

@@ -4,3 +4,4 @@ final.png
 .idea/
 dev/production.env
 dev/development.env
+dev/dev-info.ts

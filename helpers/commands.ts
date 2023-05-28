@@ -101,6 +101,17 @@ const commands: ApplicationCommandData[] = [
             required: true,
             autocomplete: true
         }]
+    },
+    {
+        name: 'stealthgreet',
+        description: '[2 Credits] Greet Someone Without Showing Your Username',
+        type: 'CHAT_INPUT',
+        options: [{
+            name: 'user',
+            description: 'The User To Greet (Leave Empty To Greet Yourself)',
+            type: 'USER',
+            required: false
+        }]
     }
 ];
 

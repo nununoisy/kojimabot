@@ -494,10 +494,6 @@ client.on('interactionCreate', async (interaction) => {
                     await dbh.addNewGuild(interaction.guildId);
                 }
                 const guildInfo = guildInfoE || await dbh.getGuildInfo(interaction.guildId);
-                if (guildInfo) {
-                    guildInfo.leaveMessage = !guildInfo.leaveMessage;
-                    await dbh.updateGuild(guildInfo);
-                }
 
                 const memberId = interaction.options.getUser('user')?.id ?? interaction.member.user.id;
                 const member = await interaction.guild?.members.fetch(memberId);
@@ -558,6 +554,30 @@ client.on('interactionCreate', async (interaction) => {
                     content: `You Have ${credits - 2} Credit${credits - 2 === 1 ? '' : 's'} Remaining.`,
                     ephemeral: true
                 });
+            } else if (interaction.command.name === "stealthgreet") {
+                const credits = await dbh.getUserCreditBalance(interaction.member.user.id);
+                if (credits < 2) {
+                    await interaction.reply({
+                        content: `Sorry, But You Do Not Have Enough Credits To Use This Command.`,
+                        ephemeral: true
+                    });
+                    return;
+                }
+
+                await interaction.deferReply({ ephemeral: true });
+
+                const memberId = interaction.options.getUser('user')?.id ?? interaction.member.user.id;
+                const member = await interaction.guild?.members.fetch(memberId);
+                if (!member || !interaction.guild) {
+                    await interaction.editReply(`I Could Not Find That Member. No Credits Deducted.`);
+                    return;
+                }
+
+                await sendMessageInGuild(interaction.guild, `Hi ${await kojimaize(member.user.username)}`, `こんにちは ${await katakanaize(member.user.username)}`);
+
+                await dbh.useCredits(interaction.member.user.id, credits, 2);
+
+                await interaction.editReply(`You Have ${credits - 2} Credit${credits - 2 === 1 ? '' : 's'} Remaining.`);
             }
         } else if (interaction.isAutocomplete() && interaction.commandName) {
             console.log(`Fulfilling autocomplete interaction for command /${interaction.commandName}`);

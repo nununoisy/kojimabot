@@ -6,7 +6,7 @@
     "outDir": "dist/",
     "esModuleInterop": true,
     "strict": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node16"
   },
   "exclude": [
     "node_modules"

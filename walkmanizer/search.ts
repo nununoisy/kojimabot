@@ -28,6 +28,7 @@ const spotifyValidateToken = async () => {
         console.log('Spotify API access token: ', grantData.body['access_token']);
         console.log('Spotify API access token expires in: ', grantData.body['expires_in']);
         spotifyApi.setAccessToken(grantData.body['access_token']);
+        setTimeout(() => spotifyApi.resetAccessToken(), (grantData.body['expires_in'] - 10) * 1000);
     }
 }
 

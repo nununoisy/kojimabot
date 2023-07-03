@@ -336,3 +336,12 @@ button {
         transform: translate(6px, 0);
     }
 }
+
+.legal-section a, .legal-section a:active {
+    color: #1da1f2;
+    text-decoration: none;
+}
+
+.legal-section a:hover {
+    text-decoration: underline;
+}
